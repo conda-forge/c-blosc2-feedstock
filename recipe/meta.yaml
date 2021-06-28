@@ -1,5 +1,5 @@
 {% set name = "c-blosc2" %}
-{% set version = "2.0.0.beta.5" %}
+{% set version = "2.0.0" %}
 
 package:
   name: {{ name }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/Blosc/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: e9bbe5f88a697745d5779ef7a2b32775652a5c8693d0aabcef19b2c4292566f5
+  sha256: 1c6a7c4100280d252c02714d724e655020de6eb9520795fd30a8ad48137621f2
   patches:
     # Old distros like CentOS 6 (and probably 7) need to link agains rt lib
     - link_rt.patch
@@ -42,7 +42,7 @@ about:
   license: BSD-3-Clause
   license_family: BSD
   license_file: LICENSE.txt
-  summary: 'A simple, compressed, fast and persistent data store library for C'
+  summary: A simple, compressed, fast and persistent data store library for C
 
   description: |
     Next generation of C-Blosc library bringing in a new container (schunk) that can optionally be persisted (frame).  Also, more filters, codecs and other bells and whistles like pre-filter support have been added.  The API tries to be as compatible as possible with the original C-Blosc.
