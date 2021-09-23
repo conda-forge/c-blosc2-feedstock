@@ -26,7 +26,6 @@ test:
   commands:
     - test -e $PREFIX/include/blosc2.h                    # [unix]
     - test -e $PREFIX/include/blosc2/blosc2-export.h      # [unix]
-    - test -e $PREFIX/lib/libblosc2.a                     # [unix]
     - test -e $PREFIX/lib/libblosc2${SHLIB_EXT}           # [unix]
     - test -e $PREFIX/lib/pkgconfig/blosc2.pc             # [unix]
     - if not exist %LIBRARY_INC%\blosc2.h exit 1         # [win]
