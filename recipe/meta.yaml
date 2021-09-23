@@ -25,9 +25,10 @@ requirements:
 test:
   commands:
     - test -e $PREFIX/include/blosc2.h                    # [unix]
-    - test -e $PREFIX/include/blosc2-export.h             # [unix]
+    - test -e $PREFIX/include/blosc2/blosc2-export.h      # [unix]
     - test -e $PREFIX/lib/libblosc2.a                     # [unix]
     - test -e $PREFIX/lib/libblosc2${SHLIB_EXT}           # [unix]
+    - test -e $PREFIX/lib/pkgconfg/blosc2.pc              # [unix]
     - if not exist %LIBRARY_INC%\blosc2.h exit 1         # [win]
     - if not exist %LIBRARY_INC%\blosc2-export.h exit 1  # [win]
     - if not exist %LIBRARY_BIN%\blosc2.dll exit 1       # [win]
