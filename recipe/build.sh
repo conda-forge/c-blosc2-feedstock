@@ -8,7 +8,7 @@ cmake -G "Unix Makefiles" \
       -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
       -DCMAKE_INSTALL_LIBDIR="${PREFIX}/lib" \
       -DCMAKE_POSITION_INDEPENDENT_CODE=1 \
-      -DBUILD_STATIC=1 \
+      -DBUILD_STATIC=0 \
       -DBUILD_SHARED=1 \
       -DBUILD_TESTS=1 \
       -DBUILD_BENCHMARKS=0 \
