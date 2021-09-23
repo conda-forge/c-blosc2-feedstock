@@ -6,6 +6,7 @@ cd build
 cmake -G "Unix Makefiles" \
       -DCMAKE_BUILD_TYPE="Release" \
       -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+      -DCMAKE_INSTALL_LIBDIR="${PREFIX}/lib" \
       -DCMAKE_POSITION_INDEPENDENT_CODE=1 \
       -DBUILD_STATIC=1 \
       -DBUILD_SHARED=1 \
