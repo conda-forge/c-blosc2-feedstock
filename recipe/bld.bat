@@ -23,7 +23,7 @@ if errorlevel 1 exit 1
 ctest -C release
 if errorlevel 1 exit 1
 
-cmake --build . --target install --config Release
+cmake --build . --target install --config Release --verbose
 if errorlevel 1 exit 1
 
 del %LIBRARY_BIN%\msvc*.dll
