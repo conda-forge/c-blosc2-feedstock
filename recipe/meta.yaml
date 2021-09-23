@@ -35,7 +35,7 @@ test:
     - if not exist %LIBRARY_INC%\blosc2\blosc2-export.h exit 1  # [win]
     - if not exist %LIBRARY_BIN%\libblosc2.dll exit 1           # [win]
     - if not exist %LIBRARY_LIB%\pkgconfig\blosc2.pc exit 1     # [win]
-    - if not exist %LIBRARY_LIB%\libblosc2.lib exit 1           # [win]
+    - if not exist %LIBRARY_LIB%\blosc2.lib exit 1.             # [win]
 
 about:
   home: https://github.com/Blosc/{{ name }}
