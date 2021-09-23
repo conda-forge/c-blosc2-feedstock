@@ -1,0 +1,111 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 8e907c71..a472797c 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -371,6 +371,22 @@ if(NOT DEFINED BLOSC_INSTALL)
+     endif()
+ endif()
+ 
++# uninstall target
++if(BLOSC_INSTALL)
++    include(GNUInstallDirs)
++    configure_file(
++         "${CMAKE_CURRENT_SOURCE_DIR}/blosc2.pc.in"
++         "${CMAKE_CURRENT_BINARY_DIR}/blosc2.pc"
++         @ONLY)
++    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/blosc2.pc"
++            DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig" COMPONENT DEV)
++    configure_file(
++        "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
++        "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
++        @ONLY)
++    add_custom_target(uninstall
++        COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
++endif()
+ 
+ # include directories
+ include_directories(include)
+@@ -407,24 +423,6 @@ if(BUILD_PLUGINS)
+ endif()
+ 
+ 
+-# uninstall target
+-if(BLOSC_INSTALL)
+-    include(GNUInstallDirs)
+-    set(CMAKE_INSTALL_LIBDIR ${CMAKE_INSTALL_LIBDIR})
+-    configure_file(
+-         "${CMAKE_CURRENT_SOURCE_DIR}/blosc2.pc.in"
+-         "${CMAKE_CURRENT_BINARY_DIR}/blosc2.pc"
+-         @ONLY)
+-    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/blosc2.pc"
+-            DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig" COMPONENT DEV)
+-     configure_file(
+-        "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
+-        "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+-        IMMEDIATE @ONLY)
+-    add_custom_target(uninstall
+-        COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
+-endif()
+-
+ # packaging
+ if(NOT BLOSC_IS_SUBPROJECT)
+     include(InstallRequiredSystemLibraries)
+diff --git a/blosc/CMakeLists.txt b/blosc/CMakeLists.txt
+index 0a61c2bf..1a7f0144 100644
+--- a/blosc/CMakeLists.txt
++++ b/blosc/CMakeLists.txt
+@@ -274,29 +274,26 @@ endif()
+ 
+ # install
+ if(BLOSC_INSTALL)
+-    install(FILES ../include/blosc2.h DESTINATION include COMPONENT DEV)
++    install(FILES ${PROJECT_SOURCE_DIR}/include/blosc2.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} COMPONENT DEV)
+     install(FILES
+-            ../include/blosc2/blosc2-export.h
+-            ../include/blosc2/blosc2-common.h
+-            ../include/blosc2/blosc2-stdio.h
+-            DESTINATION include/blosc2 COMPONENT DEV)
++            ${PROJECT_SOURCE_DIR}/include/blosc2/blosc2-export.h
++            ${PROJECT_SOURCE_DIR}/include/blosc2/blosc2-common.h
++            ${PROJECT_SOURCE_DIR}/include/blosc2/blosc2-stdio.h
++            DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/blosc2 COMPONENT DEV)
+     if(BUILD_PLUGINS)
+         install(FILES
+-                ../include/blosc2/filters-registry.h
+-                ../include/blosc2/codecs-registry.h
+-                DESTINATION include/blosc2 COMPONENT DEV)
++                ${PROJECT_SOURCE_DIR}/include/blosc2/filters-registry.h
++                ${PROJECT_SOURCE_DIR}/include/blosc2/codecs-registry.h
++                DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/blosc2 COMPONENT DEV)
+     endif()
+ 
+     if(BUILD_SHARED)
+         install(TARGETS blosc2_shared
+-                LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+-                ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+-                RUNTIME DESTINATION bin COMPONENT LIB)
++                LIBRARY COMPONENT LIB
++                ARCHIVE COMPONENT DEV
++                RUNTIME COMPONENT LIB)
+     endif()
+     if(BUILD_STATIC)
+-        install(TARGETS blosc2_static
+-                LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+-                ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+-                RUNTIME DESTINATION bin COMPONENT LIB)
++        install(TARGETS blosc2_static COMPONENT DEV)
+     endif()
+ endif()
+diff --git a/blosc2.pc.in b/blosc2.pc.in
+index a5de42b5..c32987b7 100644
+--- a/blosc2.pc.in
++++ b/blosc2.pc.in
+@@ -2,7 +2,7 @@ prefix=@CMAKE_INSTALL_PREFIX@
+ exec_prefix=${prefix}
+ libdir=${exec_prefix}/@CMAKE_INSTALL_LIBDIR@
+ sharedlibdir=${libdir}
+-includedir=${prefix}/include
++includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@
+ 
+ Name: blosc2
+ Description: A blocking, shuffling and lossless compression library
