@@ -14,6 +14,8 @@ cmake -G "NMake Makefiles" ^
       -DBUILD_SHARED:BOOL=ON ^
       -DBUILD_TESTS:BOOL=ON ^
       -DBUILD_BENCHMARKS:BOOL=OFF ^
+      -DBLOSC_IS_SUBPROJECT=ON ^
+      -DBLOSC_INSTALL=ON ^
       "%SRC_DIR%"
 if errorlevel 1 exit 1
 
@@ -25,11 +27,3 @@ if errorlevel 1 exit 1
 
 cmake --build . --target install --config Release
 if errorlevel 1 exit 1
-
-;REM hmaarrfk 2021/09/23
-;REM For some reason the msvc stuff is being copied over
-;REM It is likely that conda won't pick them up, but delete them
-;REM for good measure
-del %LIBRARY_BIN%\msvc*.dll
-del %LIBRARY_BIN%\concrt*.dll
-del %LIBRARY_BIN%\vcruntime*.dll
