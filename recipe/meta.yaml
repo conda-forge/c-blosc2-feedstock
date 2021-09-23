@@ -8,9 +8,6 @@ package:
 source:
   url: https://github.com/Blosc/{{ name }}/archive/v{{ version }}.tar.gz
   sha256: e964d5ced892c7c6afbfdd50511d5087a04c2d60bfd6798feccf813ba27389ff
-  patches:
-    # Old distros like CentOS 6 (and probably 7) need to link agains rt lib
-    - link_rt.patch
 
 build:
   number: 0
