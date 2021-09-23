@@ -31,7 +31,12 @@ test:
     - if not exist %LIBRARY_INC%\blosc2.h exit 1         # [win]
     - if not exist %LIBRARY_INC%\blosc2\blosc2-export.h exit 1  # [win]
     - if not exist %LIBRARY_BIN%\libblosc2.dll exit 1    # [win]
-    - if not exist %LIBRARY_LIB%\libblosc2.lib exit 1    # [win]
+    # hmaarrfk: 2021/09/23
+    # I'm not sure if the lib file is necessary, but when
+    # We disabled the static library, it was no longer installed
+    # Lets see if downstream can compile and use libblosc2 without
+    # it.
+    # - if not exist %LIBRARY_LIB%\libblosc2.lib exit 1    # [win]
     - if not exist %LIBRARY_LIB%\pkgconfig\blosc2.pc     # [win]
 
 about:
