@@ -151,6 +151,114 @@ index 3d72c055..e906ae22 100644
              # add_test(test_zlib_bitshuffle_n ${BENCH_EXE} zlib ${BITSHUFFLE_N_OPTS})
          endif()
          if(HAVE_ZSTD)
+diff --git a/blosc/CMakeLists.txt b/blosc/CMakeLists.txt
+index 1a7f0144..823d75ca 100644
+--- a/blosc/CMakeLists.txt
++++ b/blosc/CMakeLists.txt
+@@ -18,11 +18,11 @@ else()
+ endif()
+ 
+ if(NOT DEACTIVATE_ZLIB)
+-    if(ZLIB_FOUND)
+-        set(BLOSC_INCLUDE_DIRS ${BLOSC_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIR})
++    if(ZLIB_NG_FOUND)
++        set(BLOSC_INCLUDE_DIRS ${BLOSC_INCLUDE_DIRS} ${ZLIB_NG_INCLUDE_DIR})
+     else()
+         set(ZLIB_LOCAL_DIR ${INTERNAL_LIBS}/${ZLIB_NG_DIR})
+-        set(BLOSC_INCLUDE_DIRS ${BLOSC_INCLUDE_DIRS} ${ZLIB_LOCAL_DIR})
++        set(BLOSC_INCLUDE_DIRS ${BLOSC_INCLUDE_DIRS} ${ZLIB_NG_LOCAL_DIR})
+     endif()
+ endif()
+ 
+@@ -96,14 +96,14 @@ else()
+     source_group("LZ4" FILES ${LZ4_FILES})
+ endif()
+ 
+-if(NOT DEACTIVATE_ZLIB)
+-    if(ZLIB_FOUND)
+-        set(LIBS ${LIBS} ${ZLIB_LIBRARY})
++if(NOT DEACTIVATE_ZLIB_NG)
++    if(ZLIB_NG_FOUND)
++        set(LIBS ${LIBS} ${ZLIB_NG_LIBRARY})
+     else()
+-        set(ZLIB_LOCAL_DIR ${INTERNAL_LIBS}/${ZLIB_NG_DIR})
+-        file(GLOB ZLIB_FILES ${ZLIB_LOCAL_DIR}/*.c)
+-        set(SOURCES ${SOURCES} ${ZLIB_FILES})
+-        source_group("Zlib" FILES ${ZLIB_FILES})
++        set(ZLIB_NG_LOCAL_DIR ${INTERNAL_LIBS}/${ZLIB_NG_DIR})
++        file(GLOB ZLIB_NG_FILES ${ZLIB_NG_LOCAL_DIR}/*.c)
++        set(SOURCES ${SOURCES} ${ZLIB_NG_FILES})
++        source_group("Zlib-ng" FILES ${ZLIB_NG_FILES})
+     endif()
+ endif()
+ 
+diff --git a/blosc/blosc2.c b/blosc/blosc2.c
+index e790e8e7..849182d4 100644
+--- a/blosc/blosc2.c
++++ b/blosc/blosc2.c
+@@ -43,7 +43,10 @@
+   #include <ippdc.h>
+ #endif
+ #if defined(HAVE_ZLIB_NG)
+-  #include "zlib.h"
++  #include "zlib-ng.h"
++#ifndef HAVE_ZLIB
++#define HAVE_ZLIB
++#endif
+ #elif defined(HAVE_ZLIB)
+   #include "zlib.h"
+ #endif /*  HAVE_MINIZ */
+@@ -423,7 +426,31 @@ static int lz4_wrap_decompress(const char* input, size_t compressed_length,
+   return (int)maxout;
+ }
+ 
+-#if defined(HAVE_ZLIB)
++#if defined(HAVE_ZLIB_NG)
++static int zlib_wrap_compress(const char* input, size_t input_length,
++                              char* output, size_t maxout, int clevel) {
++  int status;
++  uLongf cl = (uLongf)maxout;
++  status = zng_compress2(
++      (Bytef*)output, &cl, (Bytef*)input, (uLong)input_length, clevel);
++  if (status != Z_OK) {
++    return 0;
++  }
++  return (int)cl;
++}
++
++static int zlib_wrap_decompress(const char* input, size_t compressed_length,
++                                char* output, size_t maxout) {
++  int status;
++  uLongf ul = (uLongf)maxout;
++  status = zng_uncompress(
++      (Bytef*)output, &ul, (Bytef*)input, (uLong)compressed_length);
++  if (status != Z_OK) {
++    return 0;
++  }
++  return (int)ul;
++}
++#elif defined(HAVE_ZLIB)
+ /* zlib is not very respectful with sharing name space with others.
+  Fortunately, its names do not collide with those already in blosc. */
+ static int zlib_wrap_compress(const char* input, size_t input_length,
+@@ -3220,11 +3247,15 @@ int blosc_get_complib_info(const char* compname, char** complib, char** version)
+             LZ4_VERSION_MAJOR, LZ4_VERSION_MINOR, LZ4_VERSION_RELEASE);
+     clibversion = sbuffer;
+   }
+-#if defined(HAVE_ZLIB)
++#if defined(HAVE_ZLIB_NG)
++  else if (clibcode == BLOSC_ZLIB_LIB) {
++    clibversion = ZLIBNG_VERSION;
++  }
++#elif defined(HAVE_ZLIB)
+   else if (clibcode == BLOSC_ZLIB_LIB) {
+     clibversion = ZLIB_VERSION;
+   }
+-#endif /* HAVE_ZLIB */
++#endif /* HAVE_ZLIB_NG or HAVE_ZLIB */
+ #if defined(HAVE_ZSTD)
+   else if (clibcode == BLOSC_ZSTD_LIB) {
+     sprintf(sbuffer, "%d.%d.%d",
 diff --git a/cmake/FindZLIB_NG.cmake b/cmake/FindZLIB_NG.cmake
 new file mode 100644
 index 00000000..2e7afb6c
@@ -165,3 +273,27 @@ index 00000000..2e7afb6c
 +    set(ZLIB_NG_FOUND TRUE)
 +    message(STATUS "Found ZLIB_NG library: ${ZLIB_NG_LIBRARY}")
 +endif()
+diff --git a/tests/Makefile b/tests/Makefile
+index 7035ba12..011e0579 100644
+--- a/tests/Makefile
++++ b/tests/Makefile
+@@ -16,13 +16,13 @@ BLOSC_LIB += $(wildcard $(LZ4_DIR)/*.c)
+ # Support for external LZ4 and LZ4HC
+ #LDFLAGS += -llz4
+ 
+-# Support for external Zlib
+-LDFLAGS += -DHAVE_ZLIB -lz
++# Support for external Zlib-ng
++LDFLAGS += -DHAVE_ZLIB_NG -lz-ng
+ 
+-# Support for internal Zlib
+-#ZLIB_DIR = ../internal-complibs/zlib-1.2.8
+-#CFLAGS += -DHAVE_ZLIB -I$(ZLIB_DIR)
+-#BLOSC_LIB += $(wildcard $(ZLIB_DIR)/*.c)
++# Support for internal Zlib-ng
++#ZLIB_DIR = ../internal-complibs/zlib-ng-2.0.5
++#CFLAGS += -DHAVE_ZLIB_NG -I$(ZLIB_NG_DIR)
++#BLOSC_LIB += $(wildcard $(ZLIB_NG_DIR)/*.c)
+ 
+ 
+ # Support for internal Zstd
