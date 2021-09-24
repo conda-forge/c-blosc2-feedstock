@@ -28,7 +28,7 @@ requirements:
   host:
     - lz4
     - zstd
-    # - zlib-ng
+    - zlib-ng
 
 test:
   commands:
