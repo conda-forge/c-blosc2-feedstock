@@ -18,6 +18,9 @@ cmake -G "NMake Makefiles" ^
       -DBUILD_BENCHMARKS:BOOL=OFF ^
       -DBLOSC_IS_SUBPROJECT=ON ^
       -DBLOSC_INSTALL=ON ^
+      -DPREFER_EXTERNAL_LZ4:BOOL=ON ^
+      -DPREFER_EXTERNAL_ZLIB:BOOL=ON ^
+      -DPREFER_EXTERNAL_ZSTD:BOOL=ON ^
       "%SRC_DIR%"
 if errorlevel 1 exit 1
 
