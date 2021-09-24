@@ -13,6 +13,7 @@ source:
     - 354-shared-library.diff
     # https://github.com/Blosc/c-blosc2/pull/357
     - 357-shuffle-altivec-import.patch
+    - findzlibng.patch
 
 build:
   number: 2
