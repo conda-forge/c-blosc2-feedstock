@@ -1,6 +1,6 @@
-From a9030a75237bad5fafd1ace12c7534e7a23ee2d8 Mon Sep 17 00:00:00 2001
+From 7977e8b6ee04cf28b3bd6b3377de023131c7ca85 Mon Sep 17 00:00:00 2001
 From: Mark Harfouche <mark.harfouche@gmail.com>
-Date: Sat, 25 Sep 2021 14:43:38 -0400
+Date: Sat, 25 Sep 2021 16:16:46 -0400
 Subject: [PATCH] Add patches to find zlibng correctly
 
 ---
@@ -295,7 +295,7 @@ index 66cfd90b..48727506 100644
  #cmakedefine BLOSC_DLL_EXPORT @DLL_EXPORT@
 diff --git a/cmake/FindZLIBNG.cmake b/cmake/FindZLIBNG.cmake
 new file mode 100644
-index 00000000..3a249338
+index 00000000..6c282cb0
 --- /dev/null
 +++ b/cmake/FindZLIBNG.cmake
 @@ -0,0 +1,54 @@
@@ -314,7 +314,7 @@ index 00000000..3a249338
 +  endif(EXISTS "${ZLIBNG_LIBRARY_DIRS}/lib")
 +endif()
 +
-+find_library(ZLIBNG_LIBRARY NAMES z-ng libz-ng libz-ng.a)
++find_library(ZLIBNG_LIBRARY NAMES z-ng libz-ng libz-ng.a zlib-ng)
 +
 +set(ZLIBNG_LIBRARIES ${ZLIBNG_LIBRARY})
 +set(ZLIBNG_INCLUDE_DIRS ${ZLIBNG_INCLUDE_DIRS})
