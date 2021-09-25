@@ -21,6 +21,7 @@ cmake -G "NMake Makefiles" ^
       -DPREFER_EXTERNAL_LZ4:BOOL=ON ^
       -DPREFER_EXTERNAL_ZLIBNG:BOOL=ON ^
       -DPREFER_EXTERNAL_ZSTD:BOOL=ON ^
+      -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
       "%SRC_DIR%"
 if errorlevel 1 exit 1
 
