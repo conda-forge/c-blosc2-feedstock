@@ -31,7 +31,7 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
-    - lz4
+    - lz4-c
     - zstd
     - zlib-ng
 
