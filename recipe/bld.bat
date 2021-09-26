@@ -28,8 +28,8 @@ if errorlevel 1 exit 1
 cmake --build . --config Release
 if errorlevel 1 exit 1
 
-echo type blosc\config.h
-type blosc\config.h
+echo type ..\blosc\config.h
+type ..\blosc\config.h
 
 ctest -C release --verbose
 if errorlevel 1 exit 1
