@@ -18,6 +18,7 @@ source:
 
 build:
   number: 2
+  skip: true  # [not win]
   run_exports:
     - {{ pin_subpackage('c-blosc2') }}
 
