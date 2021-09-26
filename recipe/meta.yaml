@@ -15,6 +15,7 @@ source:
     - 357-shuffle-altivec-import.patch
     # https://github.com/Blosc/c-blosc2/pull/358
     - 358-findlibzng.patch
+    - 0001-Link-the-filegen-utility-with-the-publically-created.patch
 
 build:
   number: 2

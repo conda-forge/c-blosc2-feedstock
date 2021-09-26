@@ -1,0 +1,32 @@
+From f7ae02482ef4a23eb49790651814ee85ad7cc078 Mon Sep 17 00:00:00 2001
+From: Mark Harfouche <mark.harfouche@gmail.com>
+Date: Sun, 26 Sep 2021 08:55:57 -0400
+Subject: [PATCH] Link the filegen utility with the publically created library
+
+---
+ compat/CMakeLists.txt | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
+
+diff --git a/compat/CMakeLists.txt b/compat/CMakeLists.txt
+index f2a4a820..e3e58bb0 100644
+--- a/compat/CMakeLists.txt
++++ b/compat/CMakeLists.txt
+@@ -1,8 +1,12 @@
+ # build the filegen utility
+-link_directories(${PROJECT_BINARY_DIR}/blosc)
+ add_executable(filegen filegen.c)
+-target_link_libraries(filegen blosc_testing)
+-add_dependencies(filegen blosc_testing)
++if(BUILD_SHARED)
++    target_link_libraries(filegen blosc2_shared)
++elseif(BUILD_STATIC)
++    target_link_libraries(filegen blosc2_static)
++else()
++    set(BUILD_TESTS OFF FORCE)
++endif()
+ 
+ # tests
+ if(BUILD_TESTS)
+-- 
+2.30.2
+
