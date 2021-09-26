@@ -17,6 +17,7 @@ source:
     - 358-findlibzng.patch
     - 0001-Link-the-filegen-utility-with-the-publically-created.patch
     # - 0001-link-targets-privately.patch
+    - 0001-Find-liblz4-for-windows.patch
 
 build:
   number: 2
