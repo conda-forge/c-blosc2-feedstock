@@ -28,7 +28,9 @@ if errorlevel 1 exit 1
 cmake --build . --config Release
 if errorlevel 1 exit 1
 
-ctest -C release
+type blosc/config.h
+
+ctest -C release --verbose
 if errorlevel 1 exit 1
 
 cmake --build . --target install --config Release
