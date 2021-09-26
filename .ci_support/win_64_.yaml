@@ -8,5 +8,7 @@ cxx_compiler:
 - vs2017
 target_platform:
 - win-64
+zlib_ng:
+- '2.0'
 zstd:
 - '1.5'
