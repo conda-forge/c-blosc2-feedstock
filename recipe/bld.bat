@@ -1,5 +1,7 @@
 setlocal EnableDelayedExpansion
 
+rmdir /s /q internal-complibs
+
 mkdir build
 if errorlevel 1 exit 1
 cd build
