@@ -25,7 +25,7 @@ cmake -G "Unix Makefiles" \
       -DPREFER_EXTERNAL_ZSTD=1 \
       "${SRC_DIR}"
 
-cmake --build .
+cmake --build . -j${CPU_COUNT}
 if [[ "${target_platform}" == "${build_platform}" ]]; then
     ctest
 fi

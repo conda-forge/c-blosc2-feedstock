@@ -1,0 +1,40 @@
+From 267aac3797aed0bc9c3c9ee81cf57a2af8b9f4eb Mon Sep 17 00:00:00 2001
+From: Mark Harfouche <mark.harfouche@gmail.com>
+Date: Sun, 26 Sep 2021 10:21:58 -0400
+Subject: [PATCH] link targets privately
+
+---
+ blosc/CMakeLists.txt | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/blosc/CMakeLists.txt b/blosc/CMakeLists.txt
+index cf54d984..13d6caef 100644
+--- a/blosc/CMakeLists.txt
++++ b/blosc/CMakeLists.txt
+@@ -253,12 +253,12 @@ if(BUILD_TESTS)
+ endif()
+ 
+ if(BUILD_SHARED)
+-    target_link_libraries(blosc2_shared ${LIBS})
++    target_link_libraries(blosc2_shared PRIVATE ${LIBS})
+     target_include_directories(blosc2_shared PUBLIC ${BLOSC_INCLUDE_DIRS})
+ endif()
+ 
+ if(BUILD_TESTS)
+-    target_link_libraries(blosc_testing ${LIBS})
++    target_link_libraries(blosc_testing PRIVATE ${LIBS})
+     target_include_directories(blosc_testing PUBLIC ${BLOSC_INCLUDE_DIRS})
+ endif()
+ 
+@@ -268,7 +268,7 @@ if(BUILD_STATIC)
+     if(MSVC OR MINGW)
+         set_target_properties(blosc2_static PROPERTIES PREFIX lib)
+     endif()
+-    target_link_libraries(blosc2_static ${LIBS})
++    target_link_libraries(blosc2_static PRIVATE ${LIBS})
+     target_include_directories(blosc2_static PUBLIC ${BLOSC_INCLUDE_DIRS})
+ endif()
+ 
+-- 
+2.30.2
+
