@@ -24,5 +24,7 @@ target_platform:
 zip_keys:
 - - c_compiler_version
   - cxx_compiler_version
+zlib_ng:
+- '2.0'
 zstd:
 - '1.5'
