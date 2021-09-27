@@ -17,7 +17,7 @@ source:
     - 359-Find-liblz4-for-windows.patch
 
 build:
-  number: 2
+  number: 3
   run_exports:
     - {{ pin_subpackage('c-blosc2') }}
 
@@ -29,6 +29,7 @@ requirements:
     - {{ compiler('cxx') }}
   host:
     - lz4-c
+    - zstd
 
 test:
   commands:
