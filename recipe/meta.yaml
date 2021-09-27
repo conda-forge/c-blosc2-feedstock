@@ -13,9 +13,11 @@ source:
     - 354-shared-library.diff
     # https://github.com/Blosc/c-blosc2/pull/357
     - 357-shuffle-altivec-import.patch
+    # https://github.com/Blosc/c-blosc2/pull/359
+    - 359-Find-liblz4-for-windows.patch
 
 build:
-  number: 1
+  number: 2
   run_exports:
     - {{ pin_subpackage('c-blosc2') }}
 
@@ -26,6 +28,7 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
+    - lz4-c
 
 test:
   commands:
