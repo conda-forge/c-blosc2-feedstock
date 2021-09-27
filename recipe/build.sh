@@ -1,6 +1,7 @@
 #!/bin/bash
 
 rm -rf internal-complibs/lz4-1.9.3
+rm -rf internal-complibs/zstd-1.5.0
 
 mkdir build
 cd build
@@ -23,6 +24,8 @@ cmake -G "Unix Makefiles" \
       -DBUILD_EXAMPLES=0 \
       -DBUILD_BENCHMARKS=0 \
       -DPREFER_EXTERNAL_LZ4=1 \
+      -DPREFER_EXTERNAL_ZSTD=1 \
+      -DPREFER_EXTERNAL_ZLIB=0 \
       "${SRC_DIR}"
 
 cmake --build .

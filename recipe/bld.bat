@@ -1,5 +1,6 @@
 setlocal EnableDelayedExpansion
 rmdir /s /q internal-complibs\lz4-1.9.3
+rmdir /s /q internal-complibs\zstd-1.5.0
 
 mkdir build
 if errorlevel 1 exit 1
@@ -20,6 +21,8 @@ cmake -G "NMake Makefiles" ^
       -DBLOSC_IS_SUBPROJECT=ON ^
       -DBLOSC_INSTALL=ON ^
       -DPREFER_EXTERNAL_LZ4:BOOL=ON ^
+      -DPREFER_EXTERNAL_ZSTD:BOOL=ON ^
+      -DPREFER_EXTERNAL_ZLIB:BOOL=OFF ^
       "%SRC_DIR%"
 if errorlevel 1 exit 1
 
