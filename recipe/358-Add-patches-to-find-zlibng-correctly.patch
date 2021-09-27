@@ -1,4 +1,4 @@
-From 3c9b55dbbe66839b7ab83b033f105d85099cf92b Mon Sep 17 00:00:00 2001
+From 129c05044eedf84119ec289044abda0a1c423778 Mon Sep 17 00:00:00 2001
 From: Mark Harfouche <mark.harfouche@gmail.com>
 Date: Sat, 25 Sep 2021 16:16:46 -0400
 Subject: [PATCH] Add patches to find zlibng correctly
@@ -6,15 +6,14 @@ Subject: [PATCH] Add patches to find zlibng correctly
 ---
  CMakeLists.txt         | 66 +++++++++++++++++++++---------------------
  bench/CMakeLists.txt   |  8 ++---
- blosc/CMakeLists.txt   | 28 +++++++++---------
+ blosc/CMakeLists.txt   | 22 +++++++-------
  blosc/blosc2.c         | 23 ++++++++++++---
  blosc/config.h.in      |  2 +-
- cmake/FindLZ4.cmake    |  2 +-
  cmake/FindZLIBNG.cmake | 54 ++++++++++++++++++++++++++++++++++
  compat/CMakeLists.txt  | 10 +++++--
  include/blosc2.h       |  6 +---
  tests/Makefile         | 12 ++++----
- 10 files changed, 140 insertions(+), 71 deletions(-)
+ 9 files changed, 136 insertions(+), 67 deletions(-)
  create mode 100644 cmake/FindZLIBNG.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
@@ -172,7 +171,7 @@ index 3d72c055..11efd83e 100644
          endif()
          if(HAVE_ZSTD)
 diff --git a/blosc/CMakeLists.txt b/blosc/CMakeLists.txt
-index 1a7f0144..13d6caef 100644
+index 1a7f0144..cf54d984 100644
 --- a/blosc/CMakeLists.txt
 +++ b/blosc/CMakeLists.txt
 @@ -18,11 +18,11 @@ else()
@@ -211,30 +210,6 @@ index 1a7f0144..13d6caef 100644
 +        set(SOURCES ${SOURCES} ${ZLIBNG_FILES})
 +        source_group("Zlib-ng" FILES ${ZLIBNG_FILES})
      endif()
- endif()
- 
-@@ -253,12 +253,12 @@ if(BUILD_TESTS)
- endif()
- 
- if(BUILD_SHARED)
--    target_link_libraries(blosc2_shared ${LIBS})
-+    target_link_libraries(blosc2_shared PRIVATE ${LIBS})
-     target_include_directories(blosc2_shared PUBLIC ${BLOSC_INCLUDE_DIRS})
- endif()
- 
- if(BUILD_TESTS)
--    target_link_libraries(blosc_testing ${LIBS})
-+    target_link_libraries(blosc_testing PRIVATE ${LIBS})
-     target_include_directories(blosc_testing PUBLIC ${BLOSC_INCLUDE_DIRS})
- endif()
- 
-@@ -268,7 +268,7 @@ if(BUILD_STATIC)
-     if(MSVC OR MINGW)
-         set_target_properties(blosc2_static PROPERTIES PREFIX lib)
-     endif()
--    target_link_libraries(blosc2_static ${LIBS})
-+    target_link_libraries(blosc2_static PRIVATE ${LIBS})
-     target_include_directories(blosc2_static PUBLIC ${BLOSC_INCLUDE_DIRS})
  endif()
  
 diff --git a/blosc/blosc2.c b/blosc/blosc2.c
@@ -310,18 +285,6 @@ index 66cfd90b..48727506 100644
  #cmakedefine HAVE_ZSTD @HAVE_ZSTD@
  #cmakedefine HAVE_IPP @HAVE_IPP@
  #cmakedefine BLOSC_DLL_EXPORT @DLL_EXPORT@
-diff --git a/cmake/FindLZ4.cmake b/cmake/FindLZ4.cmake
-index 2a0b69f6..b95d3161 100644
---- a/cmake/FindLZ4.cmake
-+++ b/cmake/FindLZ4.cmake
-@@ -1,6 +1,6 @@
- find_path(LZ4_INCLUDE_DIR lz4.h)
- 
--find_library(LZ4_LIBRARY NAMES lz4)
-+find_library(LZ4_LIBRARY NAMES lz4 liblz4)
- 
- if(LZ4_INCLUDE_DIR AND LZ4_LIBRARY)
-     set(LZ4_FOUND TRUE)
 diff --git a/cmake/FindZLIBNG.cmake b/cmake/FindZLIBNG.cmake
 new file mode 100644
 index 00000000..48e3345a
