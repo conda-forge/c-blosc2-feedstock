@@ -1,5 +1,7 @@
 #!/bin/bash
 
+rm -rf internal-complibs/lz4-1.9.3
+
 mkdir build
 cd build
 
@@ -20,6 +22,7 @@ cmake -G "Unix Makefiles" \
       -DBUILD_TESTS=${BUILD_TESTS} \
       -DBUILD_EXAMPLES=0 \
       -DBUILD_BENCHMARKS=0 \
+      -DPREFER_EXTERNAL_LZ4=1 \
       "${SRC_DIR}"
 
 cmake --build .
