@@ -25,7 +25,7 @@ cmake -G "Unix Makefiles" \
       -DBUILD_BENCHMARKS=0 \
       -DPREFER_EXTERNAL_LZ4=1 \
       -DPREFER_EXTERNAL_ZSTD=1 \
-      -DPREFER_EXTERNAL_ZLIB=0 \
+      -DPREFER_EXTERNAL_ZLIBNG=1 \
       "${SRC_DIR}"
 
 cmake --build .

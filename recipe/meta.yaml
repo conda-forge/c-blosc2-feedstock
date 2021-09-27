@@ -15,9 +15,11 @@ source:
     - 357-shuffle-altivec-import.patch
     # https://github.com/Blosc/c-blosc2/pull/359
     - 359-Find-liblz4-for-windows.patch
+    # https://github.com/Blosc/c-blosc2/pull/358
+    - 358-Add-patches-to-find-zlibng-correctly.patch
 
 build:
-  number: 3
+  number: 4
   run_exports:
     - {{ pin_subpackage('c-blosc2') }}
 
@@ -30,6 +32,7 @@ requirements:
   host:
     - lz4-c
     - zstd
+    - zlib-ng
 
 test:
   commands:

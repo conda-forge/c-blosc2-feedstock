@@ -1,0 +1,448 @@
+From 3c9b55dbbe66839b7ab83b033f105d85099cf92b Mon Sep 17 00:00:00 2001
+From: Mark Harfouche <mark.harfouche@gmail.com>
+Date: Sat, 25 Sep 2021 16:16:46 -0400
+Subject: [PATCH] Add patches to find zlibng correctly
+
+---
+ CMakeLists.txt         | 66 +++++++++++++++++++++---------------------
+ bench/CMakeLists.txt   |  8 ++---
+ blosc/CMakeLists.txt   | 28 +++++++++---------
+ blosc/blosc2.c         | 23 ++++++++++++---
+ blosc/config.h.in      |  2 +-
+ cmake/FindLZ4.cmake    |  2 +-
+ cmake/FindZLIBNG.cmake | 54 ++++++++++++++++++++++++++++++++++
+ compat/CMakeLists.txt  | 10 +++++--
+ include/blosc2.h       |  6 +---
+ tests/Makefile         | 12 ++++----
+ 10 files changed, 140 insertions(+), 71 deletions(-)
+ create mode 100644 cmake/FindZLIBNG.cmake
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index a472797c..aaf23bce 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -21,14 +21,14 @@
+ #       build a lite version (only with BloscLZ and LZ4/LZ4HC) of the blosc library
+ #   DEACTIVATE_AVX2: default OFF
+ #       do not attempt to build with AVX2 instructions
+-#   DEACTIVATE_ZLIB: default OFF
++#   DEACTIVATE_ZLIBNG: default OFF
+ #       do not include support for the Zlib library
+ #   DEACTIVATE_ZSTD: default OFF
+ #       do not include support for the Zstd library
+ #   PREFER_EXTERNAL_LZ4: default OFF
+ #       when found, use the installed LZ4 libs instead of included
+ #       sources
+-#   PREFER_EXTERNAL_ZLIB: default OFF
++#   PREFER_EXTERNAL_ZLIBNG: default OFF
+ #       when found, use the installed ZLIB libs instead of included
+ #       MINIZ sources
+ #   PREFER_EXTERNAL_ZSTD: default OFF
+@@ -106,16 +106,16 @@ option(BUILD_LITE
+     "Build a lite version (only with BloscLZ and LZ4/LZ4HC) of the blosc library." OFF)
+ option(DEACTIVATE_AVX2
+     "Do not attempt to build with AVX2 instructions" OFF)
+-option(DEACTIVATE_ZLIB
+-    "Do not include support for the ZLIB library." OFF)
++option(DEACTIVATE_ZLIBNG
++    "Do not include support for the ZLIBNG library." OFF)
+ option(DEACTIVATE_ZSTD
+     "Do not include support for the ZSTD library." OFF)
+ option(DEACTIVATE_IPP
+     "Do not include support for the Intel IPP library." ON)
+ option(PREFER_EXTERNAL_LZ4
+     "Find and use external LZ4 library instead of included sources." OFF)
+-option(PREFER_EXTERNAL_ZLIB
+-    "Find and use external ZLIB library instead of included sources." OFF)
++option(PREFER_EXTERNAL_ZLIBNG
++    "Find and use external ZLIBNG library instead of included sources." OFF)
+ option(PREFER_EXTERNAL_ZSTD
+     "Find and use external ZSTD library instead of included sources." OFF)
+ 
+@@ -138,7 +138,7 @@ if(BUILD_PLUGINS AND BUILD_LITE)
+ endif()
+ 
+ if(BUILD_LITE)
+-    set(DEACTIVATE_ZLIB ON)
++    set(DEACTIVATE_ZLIBNG ON)
+     set(DEACTIVATE_ZSTD ON)
+ endif()
+ 
+@@ -148,36 +148,36 @@ else()
+     message(STATUS "Using LZ4 internal sources.")
+ endif()
+ 
+-if(NOT DEACTIVATE_ZLIB)
+-    # import the ZLIB_ROOT environment variable to help finding the zlib library
+-    if(PREFER_EXTERNAL_ZLIB)
+-        set(ZLIB_ROOT $ENV{ZLIB_ROOT})
+-        find_package(ZLIB)
+-        if(NOT ZLIB_FOUND)
++if(NOT DEACTIVATE_ZLIBNG)
++    # import the ZLIBNG_ROOT environment variable to help finding the zlib library
++    if(PREFER_EXTERNAL_ZLIBNG)
++        set(ZLIBNG_ROOT $ENV{ZLIBNG_ROOT})
++        find_package(ZLIBNG)
++        if(NOT ZLIBNG_FOUND)
+             message(STATUS "No ZLIB found.  Using ZLIB-NG internal sources.")
+-            set(HAVE_ZLIB_NG TRUE)
+         endif()
+-    else()
+-        message(STATUS "Using ZLIB-NG internal sources for ZLIB support.")
+-        set(HAVE_ZLIB_NG TRUE)
++        set(HAVE_ZLIBNG TRUE)
+     endif()
+-    # HAVE_ZLIB will be set to true because even if the library is not found,
+-    # we will use the included sources for it
+-    set(HAVE_ZLIB TRUE)
+-endif()
+ 
+-if(HAVE_ZLIB_NG)
+-    set(ZLIB_NG_DIR "zlib-ng-2.0.5")  # update to the actual included version
+-    add_definitions(-DZLIB_COMPAT)
+-    set(ZLIB_COMPAT TRUE)
+-    set(SKIP_INSTALL_ALL TRUE)
+-    set(BUILD_SHARED_LIBS FALSE)
+-    set(ZLIB_ENABLE_TESTS OFF)
+-    add_subdirectory("internal-complibs/${ZLIB_NG_DIR}")
+-
+-    file(COPY
+-            ${CMAKE_CURRENT_BINARY_DIR}/internal-complibs/${ZLIB_NG_DIR}/zconf.h
+-            DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/internal-complibs/${ZLIB_NG_DIR}/)
++    if(NOT HAVE_ZLIBNG)
++        message(STATUS "Using ZLIB-NG internal sources for ZLIB support.")
++
++        set(ZLIBNG_DIR "zlib-ng-2.0.5")  # update to the actual included version
++        add_definitions(-DZLIB_COMPAT)
++        set(ZLIB_COMPAT TRUE)
++        set(SKIP_INSTALL_ALL TRUE)
++        set(BUILD_SHARED_LIBS FALSE)
++        set(ZLIB_ENABLE_TESTS OFF)
++        add_subdirectory("internal-complibs/${ZLIBNG_DIR}")
++
++        file(COPY
++                ${CMAKE_CURRENT_BINARY_DIR}/internal-complibs/${ZLIBNG_DIR}/zconf.h
++                DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/internal-complibs/${ZLIBNG_DIR}/)
++
++        # HAVE_ZLIB will be set to true because even if the library is not found,
++        # we will use the included sources for it
++        set(HAVE_ZLIBNG TRUE)
++    endif()
+ endif()
+ 
+ if(NOT DEACTIVATE_ZSTD)
+diff --git a/bench/CMakeLists.txt b/bench/CMakeLists.txt
+index 3d72c055..11efd83e 100644
+--- a/bench/CMakeLists.txt
++++ b/bench/CMakeLists.txt
+@@ -51,7 +51,7 @@ if(BUILD_TESTS)
+         add_test(test_blosclz_shuffle_1 ${BENCH_EXE} blosclz ${SHUFFLE_1_OPTS})
+         add_test(test_lz4_shuffle_1 ${BENCH_EXE} lz4 ${SHUFFLE_1_OPTS})
+         # add_test(test_lz4hc_shuffle_1 ${BENCH_EXE} lz4hc ${SHUFFLE_1_OPTS})
+-        if(HAVE_ZLIB)
++        if(HAVE_ZLIBNG)
+             # add_test(test_zlib_shuffle_1 ${BENCH_EXE} zlib ${SHUFFLE_1_OPTS})
+         endif()
+         if(HAVE_ZSTD)
+@@ -65,7 +65,7 @@ if(BUILD_TESTS)
+         add_test(test_blosclz_shuffle_n ${BENCH_EXE} blosclz ${SHUFFLE_N_OPTS})
+         add_test(test_lz4_shuffle_n ${BENCH_EXE} lz4 ${SHUFFLE_N_OPTS})
+         add_test(test_lz4hc_shuffle_n ${BENCH_EXE} lz4hc ${SHUFFLE_N_OPTS})
+-        if(HAVE_ZLIB)
++        if(HAVE_ZLIBNG)
+             add_test(test_zlib_shuffle_n ${BENCH_EXE} zlib ${SHUFFLE_N_OPTS})
+         endif()
+         if(HAVE_ZSTD)
+@@ -79,7 +79,7 @@ if(BUILD_TESTS)
+         add_test(test_blosclz_bitshuffle_1 ${BENCH_EXE} blosclz ${BITSHUFFLE_1_OPTS})
+         add_test(test_lz4_bitshuffle_1 ${BENCH_EXE} lz4 ${BITSHUFFLE_1_OPTS})
+         # add_test(test_lz4hc_bitshuffle_1 ${BENCH_EXE} lz4hc ${BITSHUFFLE_1_OPTS})
+-        if(HAVE_ZLIB)
++        if(HAVE_ZLIBNG)
+             # add_test(test_zlib_bitshuffle_1 ${BENCH_EXE} zlib ${BITSHUFFLE_1_OPTS})
+         endif()
+         if(HAVE_ZSTD)
+@@ -93,7 +93,7 @@ if(BUILD_TESTS)
+         add_test(test_blosclz_bitshuffle_n ${BENCH_EXE} blosclz ${BITSHUFFLE_N_OPTS})
+         add_test(test_lz4_bitshuffle_n ${BENCH_EXE} lz4 ${BITSHUFFLE_N_OPTS})
+         # add_test(test_lz4hc_bitshuffle_n ${BENCH_EXE} lz4hc ${BITSHUFFLE_N_OPTS})
+-        if(HAVE_ZLIB)
++        if(HAVE_ZLIBNG)
+             # add_test(test_zlib_bitshuffle_n ${BENCH_EXE} zlib ${BITSHUFFLE_N_OPTS})
+         endif()
+         if(HAVE_ZSTD)
+diff --git a/blosc/CMakeLists.txt b/blosc/CMakeLists.txt
+index 1a7f0144..13d6caef 100644
+--- a/blosc/CMakeLists.txt
++++ b/blosc/CMakeLists.txt
+@@ -18,11 +18,11 @@ else()
+ endif()
+ 
+ if(NOT DEACTIVATE_ZLIB)
+-    if(ZLIB_FOUND)
+-        set(BLOSC_INCLUDE_DIRS ${BLOSC_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIR})
++    if(ZLIBNG_FOUND)
++        set(BLOSC_INCLUDE_DIRS ${BLOSC_INCLUDE_DIRS} ${ZLIBNG_INCLUDE_DIR})
+     else()
+-        set(ZLIB_LOCAL_DIR ${INTERNAL_LIBS}/${ZLIB_NG_DIR})
+-        set(BLOSC_INCLUDE_DIRS ${BLOSC_INCLUDE_DIRS} ${ZLIB_LOCAL_DIR})
++        set(ZLIB_LOCAL_DIR ${INTERNAL_LIBS}/${ZLIBNG_DIR})
++        set(BLOSC_INCLUDE_DIRS ${BLOSC_INCLUDE_DIRS} ${ZLIBNG_LOCAL_DIR})
+     endif()
+ endif()
+ 
+@@ -96,14 +96,14 @@ else()
+     source_group("LZ4" FILES ${LZ4_FILES})
+ endif()
+ 
+-if(NOT DEACTIVATE_ZLIB)
+-    if(ZLIB_FOUND)
+-        set(LIBS ${LIBS} ${ZLIB_LIBRARY})
++if(NOT DEACTIVATE_ZLIBNG)
++    if(ZLIBNG_FOUND)
++        set(LIBS ${LIBS} ${ZLIBNG_LIBRARY})
+     else()
+-        set(ZLIB_LOCAL_DIR ${INTERNAL_LIBS}/${ZLIB_NG_DIR})
+-        file(GLOB ZLIB_FILES ${ZLIB_LOCAL_DIR}/*.c)
+-        set(SOURCES ${SOURCES} ${ZLIB_FILES})
+-        source_group("Zlib" FILES ${ZLIB_FILES})
++        set(ZLIBNG_LOCAL_DIR ${INTERNAL_LIBS}/${ZLIBNG_DIR})
++        file(GLOB ZLIBNG_FILES ${ZLIBNG_LOCAL_DIR}/*.c)
++        set(SOURCES ${SOURCES} ${ZLIBNG_FILES})
++        source_group("Zlib-ng" FILES ${ZLIBNG_FILES})
+     endif()
+ endif()
+ 
+@@ -253,12 +253,12 @@ if(BUILD_TESTS)
+ endif()
+ 
+ if(BUILD_SHARED)
+-    target_link_libraries(blosc2_shared ${LIBS})
++    target_link_libraries(blosc2_shared PRIVATE ${LIBS})
+     target_include_directories(blosc2_shared PUBLIC ${BLOSC_INCLUDE_DIRS})
+ endif()
+ 
+ if(BUILD_TESTS)
+-    target_link_libraries(blosc_testing ${LIBS})
++    target_link_libraries(blosc_testing PRIVATE ${LIBS})
+     target_include_directories(blosc_testing PUBLIC ${BLOSC_INCLUDE_DIRS})
+ endif()
+ 
+@@ -268,7 +268,7 @@ if(BUILD_STATIC)
+     if(MSVC OR MINGW)
+         set_target_properties(blosc2_static PROPERTIES PREFIX lib)
+     endif()
+-    target_link_libraries(blosc2_static ${LIBS})
++    target_link_libraries(blosc2_static PRIVATE ${LIBS})
+     target_include_directories(blosc2_static PUBLIC ${BLOSC_INCLUDE_DIRS})
+ endif()
+ 
+diff --git a/blosc/blosc2.c b/blosc/blosc2.c
+index e790e8e7..921f5420 100644
+--- a/blosc/blosc2.c
++++ b/blosc/blosc2.c
+@@ -42,8 +42,11 @@
+   #include <ipps.h>
+   #include <ippdc.h>
+ #endif
+-#if defined(HAVE_ZLIB_NG)
+-  #include "zlib.h"
++#if defined(HAVE_ZLIBNG)
++  #include "zlib-ng.h"
++#ifndef HAVE_ZLIB
++#define HAVE_ZLIB
++#endif
+ #elif defined(HAVE_ZLIB)
+   #include "zlib.h"
+ #endif /*  HAVE_MINIZ */
+@@ -430,7 +433,11 @@ static int zlib_wrap_compress(const char* input, size_t input_length,
+                               char* output, size_t maxout, int clevel) {
+   int status;
+   uLongf cl = (uLongf)maxout;
++#if defined(HAVE_ZLIBNG)
++  status = zng_compress2(
++#else
+   status = compress2(
++#endif
+       (Bytef*)output, &cl, (Bytef*)input, (uLong)input_length, clevel);
+   if (status != Z_OK) {
+     return 0;
+@@ -442,7 +449,11 @@ static int zlib_wrap_decompress(const char* input, size_t compressed_length,
+                                 char* output, size_t maxout) {
+   int status;
+   uLongf ul = (uLongf)maxout;
++#if defined(HAVE_ZLIBNG)
++  status = zng_uncompress(
++#else
+   status = uncompress(
++#endif
+       (Bytef*)output, &ul, (Bytef*)input, (uLong)compressed_length);
+   if (status != Z_OK) {
+     return 0;
+@@ -3220,11 +3231,15 @@ int blosc_get_complib_info(const char* compname, char** complib, char** version)
+             LZ4_VERSION_MAJOR, LZ4_VERSION_MINOR, LZ4_VERSION_RELEASE);
+     clibversion = sbuffer;
+   }
+-#if defined(HAVE_ZLIB)
++#if defined(HAVE_ZLIBNG)
++  else if (clibcode == BLOSC_ZLIB_LIB) {
++    clibversion = ZLIBNG_VERSION;
++  }
++#elif defined(HAVE_ZLIB)
+   else if (clibcode == BLOSC_ZLIB_LIB) {
+     clibversion = ZLIB_VERSION;
+   }
+-#endif /* HAVE_ZLIB */
++#endif /* HAVE_ZLIBNG or HAVE_ZLIB */
+ #if defined(HAVE_ZSTD)
+   else if (clibcode == BLOSC_ZSTD_LIB) {
+     sprintf(sbuffer, "%d.%d.%d",
+diff --git a/blosc/config.h.in b/blosc/config.h.in
+index 66cfd90b..48727506 100644
+--- a/blosc/config.h.in
++++ b/blosc/config.h.in
+@@ -2,7 +2,7 @@
+ #define _CONFIGURATION_HEADER_GUARD_H_
+ 
+ #cmakedefine HAVE_ZLIB @HAVE_ZLIB@
+-#cmakedefine HAVE_ZLIB_NG @HAVE_ZLIB_NG@
++#cmakedefine HAVE_ZLIBNG @HAVE_ZLIBNG@
+ #cmakedefine HAVE_ZSTD @HAVE_ZSTD@
+ #cmakedefine HAVE_IPP @HAVE_IPP@
+ #cmakedefine BLOSC_DLL_EXPORT @DLL_EXPORT@
+diff --git a/cmake/FindLZ4.cmake b/cmake/FindLZ4.cmake
+index 2a0b69f6..b95d3161 100644
+--- a/cmake/FindLZ4.cmake
++++ b/cmake/FindLZ4.cmake
+@@ -1,6 +1,6 @@
+ find_path(LZ4_INCLUDE_DIR lz4.h)
+ 
+-find_library(LZ4_LIBRARY NAMES lz4)
++find_library(LZ4_LIBRARY NAMES lz4 liblz4)
+ 
+ if(LZ4_INCLUDE_DIR AND LZ4_LIBRARY)
+     set(LZ4_FOUND TRUE)
+diff --git a/cmake/FindZLIBNG.cmake b/cmake/FindZLIBNG.cmake
+new file mode 100644
+index 00000000..48e3345a
+--- /dev/null
++++ b/cmake/FindZLIBNG.cmake
+@@ -0,0 +1,54 @@
++find_path(ZLIBNG_INCLUDE_DIRS NAMES zlib-ng.h)
++
++if(ZLIB_INCLUDE_DIRS)
++  set(ZLIBNG_LIBRARY_DIRS ${ZLIBNG_INCLUDE_DIRS})
++
++  if("${ZLIBNG_LIBRARY_DIRS}" MATCHES "/include$")
++    # Strip off the trailing "/include" in the path.
++    GET_FILENAME_COMPONENT(ZLIBNG_LIBRARY_DIRS ${ZLIBNG_LIBRARY_DIRS} PATH)
++  endif("${ZLIBNG_LIBRARY_DIRS}" MATCHES "/include$")
++
++  if(EXISTS "${ZLIBNG_LIBRARY_DIRS}/lib")
++    set(ZLIBNG_LIBRARY_DIRS ${ZLIBNG_LIBRARY_DIRS}/lib)
++  endif(EXISTS "${ZLIBNG_LIBRARY_DIRS}/lib")
++endif()
++
++find_library(ZLIBNG_LIBRARY NAMES z-ng libz-ng zlib-ng libz-ng.a)
++
++set(ZLIBNG_LIBRARIES ${ZLIBNG_LIBRARY})
++set(ZLIBNG_INCLUDE_DIRS ${ZLIBNG_INCLUDE_DIRS})
++
++include(FindPackageHandleStandardArgs)
++find_package_handle_standard_args(ZLIBNG DEFAULT_MSG ZLIBNG_LIBRARY ZLIBNG_INCLUDE_DIRS)
++
++if(ZLIBNG_INCLUDE_DIRS AND ZLIBNG_LIBRARIES)
++  set(ZLIBNG_FOUND TRUE)
++else(ZLIBNG_INCLUDE_DIRS AND ZLIBNG_LIBRARIES)
++  set(ZLIBNG_FOUND FALSE)
++endif(ZLIBNG_INCLUDE_DIRS AND ZLIBNG_LIBRARIES)
++
++if(ZLIBNG_FOUND)
++  message(STATUS "Found zlib-ng: ${ZLIBNG_LIBRARIES}, ${ZLIBNG_INCLUDE_DIRS}")
++endif(ZLIBNG_FOUND)
++
++#[[
++Copyright https://github.com/zlib-ng/minizip-ng, 2021
++
++Condition of use and distribution are the same as zlib:
++
++This software is provided 'as-is', without any express or implied
++warranty.  In no event will the authors be held liable for any damages
++arising from the use of this software.
++
++Permission is granted to anyone to use this software for any purpose,
++including commercial applications, and to alter it and redistribute it
++freely, subject to the following restrictions:
++
++1. The origin of this software must not be misrepresented; you must not
++   claim that you wrote the original software. If you use this software
++   in a product, an acknowledgement in the product documentation would be
++   appreciated but is not required.
++2. Altered source versions must be plainly marked as such, and must not be
++   misrepresented as being the original software.
++3. This notice may not be removed or altered from any source distribution.
++]]#
+diff --git a/compat/CMakeLists.txt b/compat/CMakeLists.txt
+index f2a4a820..e3e58bb0 100644
+--- a/compat/CMakeLists.txt
++++ b/compat/CMakeLists.txt
+@@ -1,8 +1,12 @@
+ # build the filegen utility
+-link_directories(${PROJECT_BINARY_DIR}/blosc)
+ add_executable(filegen filegen.c)
+-target_link_libraries(filegen blosc_testing)
+-add_dependencies(filegen blosc_testing)
++if(BUILD_SHARED)
++    target_link_libraries(filegen blosc2_shared)
++elseif(BUILD_STATIC)
++    target_link_libraries(filegen blosc2_static)
++else()
++    set(BUILD_TESTS OFF FORCE)
++endif()
+ 
+ # tests
+ if(BUILD_TESTS)
+diff --git a/include/blosc2.h b/include/blosc2.h
+index a7fb41c8..fc3c52a9 100644
+--- a/include/blosc2.h
++++ b/include/blosc2.h
+@@ -229,11 +229,7 @@ enum {
+  */
+ #define BLOSC_BLOSCLZ_LIBNAME   "BloscLZ"
+ #define BLOSC_LZ4_LIBNAME       "LZ4"
+-#if defined(HAVE_ZIB_NG)
+-  #define BLOSC_ZLIB_LIBNAME    "Zlib (via zlib-ng)"
+-#else
+-  #define BLOSC_ZLIB_LIBNAME    "Zlib"
+-#endif	/* HAVE_ZLIB_NG */
++#define BLOSC_ZLIB_LIBNAME      "Zlib (via zlib-ng)"
+ #define BLOSC_ZSTD_LIBNAME      "Zstd"
+ 
+ /**
+diff --git a/tests/Makefile b/tests/Makefile
+index 7035ba12..e74ab3b2 100644
+--- a/tests/Makefile
++++ b/tests/Makefile
+@@ -16,13 +16,13 @@ BLOSC_LIB += $(wildcard $(LZ4_DIR)/*.c)
+ # Support for external LZ4 and LZ4HC
+ #LDFLAGS += -llz4
+ 
+-# Support for external Zlib
+-LDFLAGS += -DHAVE_ZLIB -lz
++# Support for external Zlib-ng
++LDFLAGS += -DHAVE_ZLIBNG -lz-ng
+ 
+-# Support for internal Zlib
+-#ZLIB_DIR = ../internal-complibs/zlib-1.2.8
+-#CFLAGS += -DHAVE_ZLIB -I$(ZLIB_DIR)
+-#BLOSC_LIB += $(wildcard $(ZLIB_DIR)/*.c)
++# Support for internal Zlib-ng
++#ZLIB_DIR = ../internal-complibs/zlib-ng-2.0.5
++#CFLAGS += -DHAVE_ZLIBNG -I$(ZLIBNG_DIR)
++#BLOSC_LIB += $(wildcard $(ZLIBNG_DIR)/*.c)
+ 
+ 
+ # Support for internal Zstd
+-- 
+2.30.2
+
