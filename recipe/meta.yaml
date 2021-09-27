@@ -17,6 +17,7 @@ source:
     - 359-Find-liblz4-for-windows.patch
     # https://github.com/Blosc/c-blosc2/pull/358
     - 358-Add-patches-to-find-zlibng-correctly.patch
+    - simplify_makefile.patch
 
 build:
   number: 4

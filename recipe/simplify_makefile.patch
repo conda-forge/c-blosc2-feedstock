@@ -1,0 +1,199 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index aaf23bce..db96c5e0 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -25,15 +25,6 @@
+ #       do not include support for the Zlib library
+ #   DEACTIVATE_ZSTD: default OFF
+ #       do not include support for the Zstd library
+-#   PREFER_EXTERNAL_LZ4: default OFF
+-#       when found, use the installed LZ4 libs instead of included
+-#       sources
+-#   PREFER_EXTERNAL_ZLIBNG: default OFF
+-#       when found, use the installed ZLIB libs instead of included
+-#       MINIZ sources
+-#   PREFER_EXTERNAL_ZSTD: default OFF
+-#       when found, use the installed ZSTD libs instead of included
+-#       sources
+ #   TEST_INCLUDE_BENCH_SHUFFLE_1: default ON
+ #       add a test that runs the benchmark program passing "shuffle" with 1
+ #       thread as second parameter
+@@ -112,12 +103,6 @@ option(DEACTIVATE_ZSTD
+     "Do not include support for the ZSTD library." OFF)
+ option(DEACTIVATE_IPP
+     "Do not include support for the Intel IPP library." ON)
+-option(PREFER_EXTERNAL_LZ4
+-    "Find and use external LZ4 library instead of included sources." OFF)
+-option(PREFER_EXTERNAL_ZLIBNG
+-    "Find and use external ZLIBNG library instead of included sources." OFF)
+-option(PREFER_EXTERNAL_ZSTD
+-    "Find and use external ZSTD library instead of included sources." OFF)
+ 
+ set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
+ 
+@@ -142,57 +127,9 @@ if(BUILD_LITE)
+     set(DEACTIVATE_ZSTD ON)
+ endif()
+ 
+-if(PREFER_EXTERNAL_LZ4)
+-    find_package(LZ4)
+-else()
+-    message(STATUS "Using LZ4 internal sources.")
+-endif()
+-
+-if(NOT DEACTIVATE_ZLIBNG)
+-    # import the ZLIBNG_ROOT environment variable to help finding the zlib library
+-    if(PREFER_EXTERNAL_ZLIBNG)
+-        set(ZLIBNG_ROOT $ENV{ZLIBNG_ROOT})
+-        find_package(ZLIBNG)
+-        if(NOT ZLIBNG_FOUND)
+-            message(STATUS "No ZLIB found.  Using ZLIB-NG internal sources.")
+-        endif()
+-        set(HAVE_ZLIBNG TRUE)
+-    endif()
+-
+-    if(NOT HAVE_ZLIBNG)
+-        message(STATUS "Using ZLIB-NG internal sources for ZLIB support.")
+-
+-        set(ZLIBNG_DIR "zlib-ng-2.0.5")  # update to the actual included version
+-        add_definitions(-DZLIB_COMPAT)
+-        set(ZLIB_COMPAT TRUE)
+-        set(SKIP_INSTALL_ALL TRUE)
+-        set(BUILD_SHARED_LIBS FALSE)
+-        set(ZLIB_ENABLE_TESTS OFF)
+-        add_subdirectory("internal-complibs/${ZLIBNG_DIR}")
+-
+-        file(COPY
+-                ${CMAKE_CURRENT_BINARY_DIR}/internal-complibs/${ZLIBNG_DIR}/zconf.h
+-                DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/internal-complibs/${ZLIBNG_DIR}/)
+-
+-        # HAVE_ZLIB will be set to true because even if the library is not found,
+-        # we will use the included sources for it
+-        set(HAVE_ZLIBNG TRUE)
+-    endif()
+-endif()
+-
+-if(NOT DEACTIVATE_ZSTD)
+-    if(PREFER_EXTERNAL_ZSTD)
+-        find_package(ZSTD)
+-        if(NOT ZSTD_FOUND)
+-          message(STATUS "No ZSTD library found.  Using internal sources.")
+-        endif()
+-    else()
+-        message(STATUS "Using ZSTD internal sources.")
+-    endif()
+-    # HAVE_ZSTD will be set to true because even if the library is
+-    # not found, we will use the included sources for it
+-    set(HAVE_ZSTD TRUE)
+-endif()
++find_package(LZ4)
++find_package(ZLIBNG)
++find_package(ZSTD)
+ 
+ if(NOT DEACTIVATE_IPP)
+     find_package(IPP)
+diff --git a/blosc/CMakeLists.txt b/blosc/CMakeLists.txt
+index cf54d984..eef092a5 100644
+--- a/blosc/CMakeLists.txt
++++ b/blosc/CMakeLists.txt
+@@ -1,6 +1,3 @@
+-# a simple way to detect that we are using CMAKE
+-add_definitions(-DUSING_CMAKE)
+-
+ set(INTERNAL_LIBS ${PROJECT_SOURCE_DIR}/internal-complibs)
+ 
+ # Hide symbols by default unless they're specifically exported.
+@@ -10,31 +7,9 @@ set(CMAKE_C_VISIBILITY_PRESET hidden)
+ 
+ # includes
+ set(BLOSC_INCLUDE_DIRS ${BLOSC_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR})
+-if(LZ4_FOUND)
+-    set(BLOSC_INCLUDE_DIRS ${BLOSC_INCLUDE_DIRS} ${LZ4_INCLUDE_DIR})
+-else()
+-    set(LZ4_LOCAL_DIR ${INTERNAL_LIBS}/lz4-1.9.3)
+-    set(BLOSC_INCLUDE_DIRS ${BLOSC_INCLUDE_DIRS} ${LZ4_LOCAL_DIR})
+-endif()
+-
+-if(NOT DEACTIVATE_ZLIB)
+-    if(ZLIBNG_FOUND)
+-        set(BLOSC_INCLUDE_DIRS ${BLOSC_INCLUDE_DIRS} ${ZLIBNG_INCLUDE_DIR})
+-    else()
+-        set(ZLIB_LOCAL_DIR ${INTERNAL_LIBS}/${ZLIBNG_DIR})
+-        set(BLOSC_INCLUDE_DIRS ${BLOSC_INCLUDE_DIRS} ${ZLIBNG_LOCAL_DIR})
+-    endif()
+-endif()
+-
+-if(NOT DEACTIVATE_ZSTD)
+-    if(ZSTD_FOUND)
+-        set(BLOSC_INCLUDE_DIRS ${BLOSC_INCLUDE_DIRS} ${ZSTD_INCLUDE_DIR})
+-    else()
+-        set(ZSTD_LOCAL_DIR ${INTERNAL_LIBS}/zstd-1.5.0)
+-        set(BLOSC_INCLUDE_DIRS ${BLOSC_INCLUDE_DIRS} ${ZSTD_LOCAL_DIR}
+-                ${ZSTD_LOCAL_DIR}/common)
+-    endif()
+-endif()
++set(BLOSC_INCLUDE_DIRS ${BLOSC_INCLUDE_DIRS} ${LZ4_INCLUDE_DIR})
++set(BLOSC_INCLUDE_DIRS ${BLOSC_INCLUDE_DIRS} ${ZLIBNG_INCLUDE_DIR})
++set(BLOSC_INCLUDE_DIRS ${BLOSC_INCLUDE_DIRS} ${ZSTD_INCLUDE_DIR})
+ 
+ include_directories(${BLOSC_INCLUDE_DIRS})
+ 
+@@ -88,39 +63,9 @@ else()
+     endif()
+ endif()
+ 
+-if(LZ4_FOUND)
+-    set(LIBS ${LIBS} ${LZ4_LIBRARY})
+-else()
+-    file(GLOB LZ4_FILES ${LZ4_LOCAL_DIR}/*.c)
+-    set(SOURCES ${SOURCES} ${LZ4_FILES})
+-    source_group("LZ4" FILES ${LZ4_FILES})
+-endif()
+-
+-if(NOT DEACTIVATE_ZLIBNG)
+-    if(ZLIBNG_FOUND)
+-        set(LIBS ${LIBS} ${ZLIBNG_LIBRARY})
+-    else()
+-        set(ZLIBNG_LOCAL_DIR ${INTERNAL_LIBS}/${ZLIBNG_DIR})
+-        file(GLOB ZLIBNG_FILES ${ZLIBNG_LOCAL_DIR}/*.c)
+-        set(SOURCES ${SOURCES} ${ZLIBNG_FILES})
+-        source_group("Zlib-ng" FILES ${ZLIBNG_FILES})
+-    endif()
+-endif()
+-
+-if(NOT DEACTIVATE_ZSTD)
+-    if(ZSTD_FOUND)
+-        set(LIBS ${LIBS} ${ZSTD_LIBRARY})
+-    else()
+-        file(GLOB ZSTD_COMMON_FILES ${ZSTD_LOCAL_DIR}/common/*.c)
+-        file(GLOB ZSTD_COMPRESS_FILES ${ZSTD_LOCAL_DIR}/compress/*.c)
+-        file(GLOB ZSTD_DECOMPRESS_FILES ${ZSTD_LOCAL_DIR}/decompress/*.c)
+-        file(GLOB ZSTD_DICT_FILES ${ZSTD_LOCAL_DIR}/dictBuilder/*.c)
+-        set(ZSTD_FILES ${ZSTD_COMMON_FILES} ${ZSTD_COMPRESS_FILES}
+-            ${ZSTD_DECOMPRESS_FILES} ${ZSTD_DICT_FILES})
+-        set(SOURCES ${SOURCES} ${ZSTD_FILES})
+-        source_group("Zstd" FILES ${ZSTD_FILES})
+-    endif()
+-endif()
++set(LIBS ${LIBS} ${LZ4_LIBRARY})
++set(LIBS ${LIBS} ${ZLIBNG_LIBRARY})
++set(LIBS ${LIBS} ${ZSTD_LIBRARY})
+ 
+ if(HAVE_IPP)
+     set(LIBS ${LIBS} "${IPP_LIBRARIES}")
+diff --git a/blosc/blosc2.c b/blosc/blosc2.c
+index 921f5420..c3648d7a 100644
+--- a/blosc/blosc2.c
++++ b/blosc/blosc2.c
+@@ -21,10 +21,7 @@
+ #include "blosc-private.h"
+ #include "frame.h"
+ 
+-
+-#if defined(USING_CMAKE)
+-  #include "config.h"
+-#endif /*  USING_CMAKE */
++#include "config.h"
+ #include "context.h"
+ 
+ #include "shuffle.h"
