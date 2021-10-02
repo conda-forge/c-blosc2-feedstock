@@ -10,11 +10,11 @@ source:
   sha256: 90c78edcc262759dd16d243141513310624bb4fda3d98ac34dcfb78255e151c1
   patches:
     # https://github.com/Blosc/c-blosc2/pull/354
-    - 354-shared-library.diff
+    # - 354-shared-library.diff
     # https://github.com/Blosc/c-blosc2/pull/357
-    - 357-shuffle-altivec-import.patch
+    # - 357-shuffle-altivec-import.patch
     # https://github.com/Blosc/c-blosc2/pull/359
-    - 359-Find-liblz4-for-windows.patch
+    # - 359-Find-liblz4-for-windows.patch
 
 build:
   number: 0
