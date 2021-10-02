@@ -1,5 +1,5 @@
 {% set name = "c-blosc2" %}
-{% set version = "2.0.3" %}
+{% set version = "2.0.4" %}
 
 package:
   name: {{ name }}
@@ -7,17 +7,10 @@ package:
 
 source:
   url: https://github.com/Blosc/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: e964d5ced892c7c6afbfdd50511d5087a04c2d60bfd6798feccf813ba27389ff
-  patches:
-    # https://github.com/Blosc/c-blosc2/pull/354
-    - 354-shared-library.diff
-    # https://github.com/Blosc/c-blosc2/pull/357
-    - 357-shuffle-altivec-import.patch
-    # https://github.com/Blosc/c-blosc2/pull/359
-    - 359-Find-liblz4-for-windows.patch
+  sha256: 90c78edcc262759dd16d243141513310624bb4fda3d98ac34dcfb78255e151c1
 
 build:
-  number: 3
+  number: 0
   run_exports:
     - {{ pin_subpackage('c-blosc2') }}
 
