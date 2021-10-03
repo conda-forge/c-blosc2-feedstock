@@ -30,6 +30,8 @@ cmake -G "Unix Makefiles" \
 
 cmake --build .
 if [[ "${target_platform}" == "${build_platform}" ]]; then
+if [[ "${CONDA_BUILD_CROSS_COMPILATION:-}" != "1" ]]; then
     ctest
+fi
 fi
 cmake --build . --target install
