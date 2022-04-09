@@ -1,7 +1,7 @@
 #!/bin/bash
 
-rm -rf internal-complibs/lz4-1.9.3
-rm -rf internal-complibs/zstd-1.5.0
+rm -rf internal-complibs/lz4-*
+rm -rf internal-complibs/zstd-*
 
 mkdir build
 cd build
