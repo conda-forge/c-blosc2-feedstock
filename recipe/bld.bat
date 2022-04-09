@@ -1,6 +1,6 @@
 setlocal EnableDelayedExpansion
 rmdir /s /q internal-complibs\lz4-1.9.3
-rmdir /s /q internal-complibs\zstd-1.5.0
+rmdir /s /q internal-complibs\zstd-1.5.2
 
 mkdir build
 if errorlevel 1 exit 1
