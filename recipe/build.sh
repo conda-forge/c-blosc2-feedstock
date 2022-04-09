@@ -30,6 +30,7 @@ cmake -G "Unix Makefiles" \
 
 cmake --build .
 if [[ "${CONDA_BUILD_CROSS_COMPILATION:-}" != "1" ]]; then
-    ctest
+    # ctest || (cat Testing/Temporary/LastTest.log && exit 1)
+    ctest || ctest --rerun-failed --output-on-failure
 fi
 cmake --build . --target install
