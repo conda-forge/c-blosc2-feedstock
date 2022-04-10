@@ -21,8 +21,8 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
-    - lz4-c  # [not (aarch64 or ppc64le)]
-    - zstd   # [not (aarch64 or ppc64le)]
+    - lz4-c
+    - zstd
 
 test:
   commands:
