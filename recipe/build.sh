@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# rm -rf internal-complibs/lz4-*
-# rm -rf internal-complibs/zstd-*
+rm -rf internal-complibs/lz4-*
+rm -rf internal-complibs/zstd-*
 
 mkdir build
 cd build
@@ -23,8 +23,8 @@ cmake -G "Unix Makefiles" \
       -DBUILD_TESTS=${BUILD_TESTS} \
       -DBUILD_EXAMPLES=0 \
       -DBUILD_BENCHMARKS=0 \
-      -DPREFER_EXTERNAL_LZ4=0 \
-      -DPREFER_EXTERNAL_ZSTD=0 \
+      -DPREFER_EXTERNAL_LZ4=1 \
+      -DPREFER_EXTERNAL_ZSTD=1 \
       -DPREFER_EXTERNAL_ZLIB=0 \
       "${SRC_DIR}"
 
