@@ -22,7 +22,7 @@ cmake -G "NMake Makefiles" ^
       -DBLOSC_INSTALL=ON ^
       -DPREFER_EXTERNAL_LZ4:BOOL=ON ^
       -DPREFER_EXTERNAL_ZSTD:BOOL=ON ^
-      -DPREFER_EXTERNAL_ZLIB:BOOL=ON ^
+      -DPREFER_EXTERNAL_ZLIB:BOOL=OFF ^
       "%SRC_DIR%"
 if errorlevel 1 exit 1
 
