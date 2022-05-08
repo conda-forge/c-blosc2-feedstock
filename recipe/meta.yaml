@@ -23,7 +23,7 @@ requirements:
   host:
     - lz4-c
     - zstd
-    - zlib-ng
+    - zlib-ng    # [unix]
 
 test:
   commands:
