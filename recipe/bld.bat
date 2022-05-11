@@ -14,7 +14,7 @@ cmake -G "NMake Makefiles" ^
       -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON ^
       -DBUILD_STATIC:BOOL=OFF ^
       -DBUILD_SHARED:BOOL=ON ^
-      -DBUILD_TESTS:BOOL=ON ^
+      -DBUILD_TESTS:BOOL=OFF ^
       -DBUILD_EXAMPLES:BOOL=OFF ^
       -DBUILD_BENCHMARKS:BOOL=OFF ^
       -DBLOSC_IS_SUBPROJECT=ON ^
@@ -28,7 +28,8 @@ if errorlevel 1 exit 1
 cmake --build . --config Debug
 if errorlevel 1 exit 1
 
-ctest -C release --rerun-failed --output-on-failure
+ctest -C Debug
+ctest -C Debug --rerun-failed --output-on-failure
 if errorlevel 1 exit 1
 
 cmake --build . --target install --config Debug

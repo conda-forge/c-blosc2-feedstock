@@ -1,0 +1,12 @@
+diff -ruN -x __pycache__ -x obj -x '*~' c-blosc2-2.1.1.orig/compat/CMakeLists.txt c-blosc2-2.1.1/compat/CMakeLists.txt
+--- c-blosc2-2.1.1.orig/compat/CMakeLists.txt	2022-05-07 12:51:50.000000000 +0200
++++ c-blosc2-2.1.1/compat/CMakeLists.txt	2022-05-11 18:46:04.179705187 +0200
+@@ -5,7 +5,7 @@
+ add_dependencies(filegen blosc_testing)
+ 
+ # tests
+-if(BUILD_TESTS)
++if(BUILD_TESTS OR TRUE)
+     option(TEST_INCLUDE_COMPAT "Include compat checks in the tests" ON)
+     if(TEST_INCLUDE_COMPAT)
+         file(GLOB DATAFILES *.cdata)
