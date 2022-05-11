@@ -1,6 +1,5 @@
 setlocal EnableDelayedExpansion
-rmdir /s /q internal-complibs\lz4-*
-rmdir /s /q internal-complibs\zstd-*
+rmdir /s /q internal-complibs
 
 mkdir build
 if errorlevel 1 exit 1
@@ -9,7 +8,7 @@ if errorlevel 1 exit 1
 
 cmake -G "NMake Makefiles" ^
       %CMAKE_ARGS% ^
-      -DCMAKE_BUILD_TYPE:STRING="Release" ^
+      -DCMAKE_BUILD_TYPE:STRING="Debug" ^
       -DCMAKE_INSTALL_PREFIX:PATH="%LIBRARY_PREFIX%" ^
       -DCMAKE_PREFIX_PATH:PATH="%LIBRARY_PREFIX%" ^
       -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON ^
@@ -26,11 +25,11 @@ cmake -G "NMake Makefiles" ^
       "%SRC_DIR%"
 if errorlevel 1 exit 1
 
-cmake --build . --config Release
+cmake --build . --config Debug
 if errorlevel 1 exit 1
 
 ctest -C release --rerun-failed --output-on-failure
 if errorlevel 1 exit 1
 
-cmake --build . --target install --config Release
+cmake --build . --target install --config Debug
 if errorlevel 1 exit 1
