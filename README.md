@@ -202,4 +202,5 @@ Feedstock Maintainers
 
 * [@FrancescAlted](https://github.com/FrancescAlted/)
 * [@hmaarrfk](https://github.com/hmaarrfk/)
+* [@zklaus](https://github.com/zklaus/)
 
