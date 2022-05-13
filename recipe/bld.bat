@@ -28,7 +28,7 @@ if errorlevel 1 exit 1
 cmake --build . --config Debug
 if errorlevel 1 exit 1
 
-ctest -VV -C Debug --output-on-failure
+ctest -VV -C Debug --output-on-failure --timeout 10
 ctest -C Debug --rerun-failed --output-on-failure
 if errorlevel 1 exit 1
 
