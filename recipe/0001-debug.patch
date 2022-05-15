@@ -1,0 +1,22 @@
+diff -ruN -x __pycache__ -x obj -x '*~' -x tags -x TAGS c-blosc2-2.1.1.orig/compat/filegen.c c-blosc2-2.1.1/compat/filegen.c
+--- c-blosc2-2.1.1.orig/compat/filegen.c	2022-05-07 12:51:50.000000000 +0200
++++ c-blosc2-2.1.1/compat/filegen.c	2022-05-15 21:29:11.284903070 +0200
+@@ -33,6 +33,7 @@
+ 
+ 
+ int main(int argc, char *argv[]) {
++  setvbuf(stdout, NULL, _IONBF, 0);
+   BLOSC_UNUSED_PARAM(argc);
+   static int32_t data[SIZE];
+   static int32_t data_out[SIZE];
+diff -ruN -x __pycache__ -x obj -x '*~' -x tags -x TAGS c-blosc2-2.1.1.orig/tests/CMakeLists.txt c-blosc2-2.1.1/tests/CMakeLists.txt
+--- c-blosc2-2.1.1.orig/tests/CMakeLists.txt	2022-05-07 12:51:50.000000000 +0200
++++ c-blosc2-2.1.1/tests/CMakeLists.txt	2022-05-11 19:10:40.206391532 +0200
+@@ -16,6 +16,7 @@
+ 
+     # Some tests will be enabled only for Unix
+     if(WIN32)
++        continue()
+         if(target STREQUAL test_nolock OR
+             target STREQUAL test_noinit OR
+             target STREQUAL test_compressor OR
