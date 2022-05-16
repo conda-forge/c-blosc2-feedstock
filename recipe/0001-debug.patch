@@ -1,16 +1,15 @@
 diff -ruN -x __pycache__ -x obj -x '*~' -x tags -x TAGS c-blosc2-2.1.1.orig/blosc/blosc2.c c-blosc2-2.1.1/blosc/blosc2.c
 --- c-blosc2-2.1.1.orig/blosc/blosc2.c	2022-05-07 12:51:50.000000000 +0200
-+++ c-blosc2-2.1.1/blosc/blosc2.c	2022-05-15 21:48:54.381758721 +0200
-@@ -435,15 +435,19 @@
++++ c-blosc2-2.1.1/blosc/blosc2.c	2022-05-16 16:23:28.752331241 +0200
+@@ -435,15 +435,15 @@
  static int zlib_wrap_compress(const char* input, size_t input_length,
                                char* output, size_t maxout, int clevel) {
    int status;
 -  uLongf cl = (uLongf)maxout;
- #ifdef ZLIB_COMPAT
-+  uLongf cl = (uLongf)maxout;
-   status = compress2(
-+      (Bytef*)output, &cl, (Bytef*)input, (uLong)input_length, clevel);
- #elif defined(HAVE_ZLIB_NG)
+-#ifdef ZLIB_COMPAT
+-  status = compress2(
+-#elif defined(HAVE_ZLIB_NG)
++#if defined(HAVE_ZLIB_NG) && ! defined(ZLIB_COMPAT)
 +  size_t cl = maxout;
    status = zng_compress2(
 +      (uint8_t*)output, &cl, (uint8_t*)input, input_length, clevel);
@@ -23,16 +22,15 @@ diff -ruN -x __pycache__ -x obj -x '*~' -x tags -x TAGS c-blosc2-2.1.1.orig/blos
    if (status != Z_OK) {
      return 0;
    }
-@@ -453,15 +457,19 @@
+@@ -453,15 +453,15 @@
  static int zlib_wrap_decompress(const char* input, size_t compressed_length,
                                  char* output, size_t maxout) {
    int status;
 -  uLongf ul = (uLongf)maxout;
- #ifdef ZLIB_COMPAT
-+  uLongf ul = (uLongf)maxout;
-   status = uncompress(
-+      (Bytef*)output, &ul, (Bytef*)input, (uLong)compressed_length);
- #elif defined(HAVE_ZLIB_NG)
+-#ifdef ZLIB_COMPAT
+-  status = uncompress(
+-#elif defined(HAVE_ZLIB_NG)
++#if defined(HAVE_ZLIB_NG) && ! defined(ZLIB_COMPAT)
 +  size_t ul = maxout;
    status = zng_uncompress(
 +      (uint8_t*)output, &ul, (uint8_t*)input, compressed_length);
