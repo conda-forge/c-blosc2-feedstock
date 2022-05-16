@@ -8,9 +8,11 @@ package:
 source:
   url: https://github.com/Blosc/{{ name }}/archive/v{{ version }}.tar.gz
   sha256: a8cbedefb8ed3b83629534ec8b4a822ffcdb1576e13dfb93107361551d32e6e9
+  patches:
+    - 0000-zlib-compat.patch
 
 build:
-  number: 0
+  number: 1
   run_exports:
     - {{ pin_subpackage('c-blosc2') }}
 
@@ -23,7 +25,7 @@ requirements:
   host:
     - lz4-c
     - zstd
-    - zlib-ng    # [unix]
+    - zlib-ng
 
 test:
   commands:
@@ -51,3 +53,4 @@ extra:
   recipe-maintainers:
     - FrancescAlted
     - hmaarrfk
+    - zklaus
