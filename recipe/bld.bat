@@ -8,7 +8,7 @@ if errorlevel 1 exit 1
 
 cmake -G "NMake Makefiles" ^
       %CMAKE_ARGS% ^
-      -DCMAKE_BUILD_TYPE:STRING="Debug" ^
+      -DCMAKE_BUILD_TYPE:STRING="Release" ^
       -DCMAKE_INSTALL_PREFIX:PATH="%LIBRARY_PREFIX%" ^
       -DCMAKE_PREFIX_PATH:PATH="%LIBRARY_PREFIX%" ^
       -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON ^
@@ -25,11 +25,11 @@ cmake -G "NMake Makefiles" ^
       "%SRC_DIR%"
 if errorlevel 1 exit 1
 
-cmake --build . --config Debug
+cmake --build . --config Release
 if errorlevel 1 exit 1
 
-ctest -VV -C Debug --output-on-failure --timeout 10
+ctest -C release --output-on-failure --timeout 120
 if errorlevel 1 exit 1
 
-cmake --build . --target install --config Debug
+cmake --build . --target install --config Release
 if errorlevel 1 exit 1
