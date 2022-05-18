@@ -28,7 +28,7 @@ cmake -G "Unix Makefiles" \
       "${SRC_DIR}"
 
 cmake --build .
-if [[ "${CONDA_BUILD_CROSS_COMPILATION:-}" != "1" ]]; then
+if [[ "${CONDA_BUILD_CROSS_COMPILATION:-}" != "1" || "${CROSSCOMPILING_EMULATOR}" != "" ]]; then
     ctest
 fi
 cmake --build . --target install
