@@ -8,8 +8,6 @@ package:
 source:
   url: https://github.com/Blosc/{{ name }}/archive/v{{ version }}.tar.gz
   sha256: 66f9977de26d6bc9ea1c0e623d873c3225e4fff709aa09b3335fd09d41d57c0e
-  patches:
-    - 0000-zlib-compat.patch
 
 build:
   number: 0
