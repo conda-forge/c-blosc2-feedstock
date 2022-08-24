@@ -1,5 +1,5 @@
 {% set name = "c-blosc2" %}
-{% set version = "2.3.0" %}
+{% set version = "2.3.1" %}
 
 package:
   name: {{ name }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/Blosc/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: d530694d1572a75c7e64133fedd83b507650db91ca9383a72d5c63a0ed5357e7
+  sha256: 12b028dad9250fe4f01c232a1924200f523ed4d313e5f14996a2df67ac27dc69
 
 build:
   number: 0
