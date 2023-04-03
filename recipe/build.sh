@@ -15,7 +15,7 @@ cmake -G "Unix Makefiles" \
       ${CMAKE_ARGS} \
       -DCMAKE_BUILD_TYPE="Release" \
       -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
-      -DCMAKE_INSTALL_LIBDIR="${PREFIX}/lib" \
+      -DCMAKE_INSTALL_LIBDIR="lib" \
       -DCMAKE_POSITION_INDEPENDENT_CODE=1 \
       -DBUILD_STATIC=0 \
       -DBUILD_SHARED=1 \
