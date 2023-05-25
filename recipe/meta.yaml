@@ -8,6 +8,8 @@ package:
 source:
   url: https://github.com/Blosc/{{ name }}/archive/v{{ version }}.tar.gz
   sha256: 5d1b7269f2f9e4ed521a980bdb7e3895e77358723af06b7d269f65686efe9732
+  patches:
+    - cmake-dl-libs.patch
 
 build:
   number: 0
