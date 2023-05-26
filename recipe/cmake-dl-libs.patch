@@ -1,0 +1,11 @@
+diff -ruN -x __pycache__ -x obj -x '*~' -x tags -x TAGS -x autom4te.cache c-blosc2-2.9.2.orig/blosc/CMakeLists.txt c-blosc2-2.9.2/blosc/CMakeLists.txt
+--- c-blosc2-2.9.2.orig/blosc/CMakeLists.txt	2023-05-25 17:41:09.145026229 +0200
++++ c-blosc2-2.9.2/blosc/CMakeLists.txt	2023-05-26 14:10:49.451692135 +0200
+@@ -97,6 +97,7 @@
+     else()
+         set(LIBS ${LIBS} Threads::Threads)
+     endif()
++    set(LIBS ${LIBS} ${CMAKE_DL_LIBS})
+ endif()
+ 
+ if(LZ4_FOUND)
