@@ -1,5 +1,5 @@
 {% set name = "c-blosc2" %}
-{% set version = "2.9.2" %}
+{% set version = "2.9.3" %}
 
 package:
   name: {{ name }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/Blosc/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: 5d1b7269f2f9e4ed521a980bdb7e3895e77358723af06b7d269f65686efe9732
+  sha256: 1f36b7d79d973505582b9a804803b640dcc0425af3d5e676070847ac4eb38176
   patches:
     - cmake-dl-libs.patch
 
