@@ -8,8 +8,6 @@ package:
 source:
   url: https://github.com/Blosc/{{ name }}/archive/v{{ version }}.tar.gz
   sha256: a88f94bf839c1371aab8207a6a43698ceb92c72f65d0d7fe5b6e59f24c138b4d
-  patches:
-    - test_contexts.patch
 
 build:
   number: 0
