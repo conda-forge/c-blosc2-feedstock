@@ -24,6 +24,8 @@ requirements:
     - lz4-c
     - zstd
     - zlib-ng
+  run:
+    - lz4-c
 
 test:
   commands:
