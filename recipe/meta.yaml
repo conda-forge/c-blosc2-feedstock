@@ -1,8 +1,11 @@
 {% set name = "c-blosc2" %}
 {% set version = "2.14.4" %}
 
+# update this when ABI version changes
+{% set abi_version = "3" %}
+
 package:
-  name: {{ name }}
+  name: {{ name }}-pkg
   version: {{ version }}
 
 source:
@@ -10,32 +13,49 @@ source:
   sha256: b5533c79aacc9ac152c80760ed1295a6608938780c3e1eecd7e53ea72ad986b0
 
 build:
-  number: 0
-  run_exports:
-    - {{ pin_subpackage('c-blosc2') }}
+  number: 1
 
-requirements:
-  build:
-    - cmake
-    - make  # [unix]
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-  host:
-    - lz4-c
-    - zstd
-    - zlib-ng
+outputs:
+  - name: c-blosc2
+    build:
+      script: ${RECIPE_DIR}/build-blosc2.sh  # [not win]
+      script: "%RECIPE_DIR%\\bld-blosc2.bat"  # [win]
+      run_exports:
+        - {{ pin_subpackage('c-blosc2') }}
+        - {{ pin_subpackage('c-blosc2-abi') }}
+  
+    requirements:
+      build:
+        - cmake
+        - make  # [unix]
+        - {{ compiler('c') }}
+        - {{ compiler('cxx') }}
+      host:
+        - lz4-c
+        - zstd
+        - zlib-ng
+      run:
+        - {{ pin_subpackage('c-blosc2-abi', exact=True) }}
 
-test:
-  commands:
-    - test -e $PREFIX/include/blosc2.h                    # [unix]
-    - test -e $PREFIX/include/blosc2/blosc2-export.h      # [unix]
-    - test -e $PREFIX/lib/libblosc2${SHLIB_EXT}           # [unix]
-    - test -e $PREFIX/lib/pkgconfig/blosc2.pc             # [unix]
-    - if not exist %LIBRARY_INC%\blosc2.h exit 1                # [win]
-    - if not exist %LIBRARY_INC%\blosc2\blosc2-export.h exit 1  # [win]
-    - if not exist %LIBRARY_BIN%\libblosc2.dll exit 1           # [win]
-    - if not exist %LIBRARY_LIB%\pkgconfig\blosc2.pc exit 1     # [win]
-    - if not exist %LIBRARY_LIB%\blosc2.lib exit 1.             # [win]
+    test:
+      commands:
+        - test -e $PREFIX/include/blosc2.h                    # [unix]
+        - test -e $PREFIX/include/blosc2/blosc2-export.h      # [unix]
+        - test -e $PREFIX/lib/libblosc2${SHLIB_EXT}           # [unix]
+        - test -e $PREFIX/lib/libblosc2.{{ abi_version }}${SHLIB_EXT}  # [osx]
+        - test -e $PREFIX/lib/libblosc2${SHLIB_EXT}.{{ abi_version }}  # [linux]
+        - test -e $PREFIX/lib/pkgconfig/blosc2.pc             # [unix]
+        - if not exist %LIBRARY_INC%\blosc2.h exit 1                # [win]
+        - if not exist %LIBRARY_INC%\blosc2\blosc2-export.h exit 1  # [win]
+        - if not exist %LIBRARY_BIN%\libblosc2.dll exit 1           # [win]
+        - if not exist %LIBRARY_LIB%\pkgconfig\blosc2.pc exit 1     # [win]
+        - if not exist %LIBRARY_LIB%\blosc2.lib exit 1.             # [win]
+  
+  # ABI package to pinning,
+  # since there's no relationship between c-blosc package version and ABI version
+  - name: c-blosc2-abi
+    version: {{ abi_version }}
+
 
 about:
   home: https://github.com/Blosc/{{ name }}
