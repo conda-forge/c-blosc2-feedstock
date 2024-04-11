@@ -204,6 +204,3 @@ Feedstock Maintainers
 * [@hmaarrfk](https://github.com/hmaarrfk/)
 * [@zklaus](https://github.com/zklaus/)
 
-
-<!-- dummy commit to enable rerendering -->
-
