@@ -10,9 +10,9 @@ source:
   sha256: b5533c79aacc9ac152c80760ed1295a6608938780c3e1eecd7e53ea72ad986b0
 
 build:
-  number: 0
+  number: 1
   run_exports:
-    - {{ pin_subpackage('c-blosc2') }}
+    - {{ pin_subpackage('c-blosc2', max_pin='x.x') }}
 
 requirements:
   build:
