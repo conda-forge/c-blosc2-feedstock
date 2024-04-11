@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/Blosc/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: e604f23ed5b6010810ae30413426622e2cf2ee81912c2f997e3a14993a4b7ec4
+  sha256: f2adcd9615f138d1bb16dc27feadab1bb1eab01d77e5e2323d14ad4ca8c3ca21
 
 build:
   number: 1
