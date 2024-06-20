@@ -1,5 +1,5 @@
 {% set name = "c-blosc2" %}
-{% set version = "2.14.4" %}
+{% set version = "2.15.0" %}
 
 package:
   name: {{ name }}
@@ -7,10 +7,10 @@ package:
 
 source:
   url: https://github.com/Blosc/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: b5533c79aacc9ac152c80760ed1295a6608938780c3e1eecd7e53ea72ad986b0
+  sha256: 1e7d9d099963ad0123ddd76b2b715b5aa1ea4b95c491d3a11508e487ebab7307
 
 build:
-  number: 1
+  number: 0
   run_exports:
     - {{ pin_subpackage('c-blosc2', max_pin='x.x') }}
 
@@ -19,6 +19,7 @@ requirements:
     - cmake
     - make  # [unix]
     - {{ compiler('c') }}
+    - {{ stdlib("c") }}
     - {{ compiler('cxx') }}
   host:
     - lz4-c
