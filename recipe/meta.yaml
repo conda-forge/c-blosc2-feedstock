@@ -19,7 +19,7 @@ requirements:
     - cmake
     - make  # [unix]
     - {{ compiler('c') }}
-    - {{ stdlib("c") }}
+    - {{ stdlib('c') }}
     - {{ compiler('cxx') }}
   host:
     - lz4-c
