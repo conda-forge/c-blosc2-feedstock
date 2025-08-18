@@ -3,7 +3,6 @@ set -ex
 
 rm -rf internal-complibs
 
-cp ${RECIPE_DIR}/cmake/FindLZ4.cmake cmake/.
 cp ${RECIPE_DIR}/cmake/FindZSTD.cmake cmake/.
 cp ${RECIPE_DIR}/cmake/FindZLIB_NG.cmake cmake/.
 
