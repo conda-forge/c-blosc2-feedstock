@@ -1,13 +1,14 @@
 #!/bin/bash
+set -ex
 
 rm -rf internal-complibs
-
-mkdir build
-cd build
 
 cp ${RECIPE_DIR}/cmake/FindLZ4.cmake cmake/.
 cp ${RECIPE_DIR}/cmake/FindZSTD.cmake cmake/.
 cp ${RECIPE_DIR}/cmake/FindZLIB_NG.cmake cmake/.
+
+mkdir build
+cd build
 
 if [[ "${target_platform}" != "${build_platform}" ]]; then
     BUILD_TESTS=0
