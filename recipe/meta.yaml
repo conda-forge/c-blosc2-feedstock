@@ -19,7 +19,7 @@ build:
 requirements:
   build:
     - cmake
-    - make  # [unix]
+    - ninja
     - {{ compiler('c') }}
     - {{ stdlib('c') }}
     - {{ compiler('cxx') }}

@@ -1,6 +1,10 @@
 setlocal EnableDelayedExpansion
 rmdir /s /q internal-complibs
 
+copy %RECIPE_DIR%\cmake\FindLZ4.cmake cmake\FindLZ4.cmake
+copy %RECIPE_DIR%\cmake\FindZSTD.cmake cmake\FindZSTD.cmake
+copy %RECIPE_DIR%\cmake\FindZLIB_NG.cmake cmake\FindZLIB_NG.cmake
+
 mkdir build
 if errorlevel 1 exit 1
 cd build
