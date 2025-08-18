@@ -3,8 +3,8 @@ set -ex
 
 rm -rf internal-complibs
 
+# https://github.com/conda-forge/lz4-c-feedstock/pull/40
 cp ${RECIPE_DIR}/cmake/FindLZ4.cmake cmake/.
-cp ${RECIPE_DIR}/cmake/FindZLIB_NG.cmake cmake/.
 
 mkdir build
 cd build

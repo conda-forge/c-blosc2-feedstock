@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index c07ba00c..eecc8877 100644
+index c07ba00c..47fd2248 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -175,14 +175,14 @@ else()
@@ -15,7 +15,20 @@ index c07ba00c..eecc8877 100644
  if(NOT DEACTIVATE_ZLIB)
      if(PREFER_EXTERNAL_ZLIB)
 -        find_package(ZLIB_NG CONFIG)
-+        find_package(ZLIB_NG)
++        find_package(ZLIB_NG CONFIG NAMES zlib-ng)
          if(ZLIB_NG_FOUND)
              set(HAVE_ZLIB_NG TRUE)
          else()
+diff --git a/blosc/CMakeLists.txt b/blosc/CMakeLists.txt
+index 8bd56d56..d9955b24 100644
+--- a/blosc/CMakeLists.txt
++++ b/blosc/CMakeLists.txt
+@@ -120,7 +120,7 @@ endif()
+ 
+ if(NOT DEACTIVATE_ZLIB)
+     if(ZLIB_NG_FOUND)
+-        list(APPEND LIBS ZLIB_NG::ZLIB_NG)
++        list(APPEND LIBS zlib-ng::zlib)
+     elseif(ZLIB_FOUND)
+         list(APPEND LIBS ZLIB::ZLIB)
+     else()

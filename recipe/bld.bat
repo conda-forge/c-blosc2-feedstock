@@ -3,8 +3,6 @@ rmdir /s /q internal-complibs
 
 copy %RECIPE_DIR%\cmake\FindLZ4.cmake cmake\FindLZ4.cmake
 if errorlevel 1 exit 1
-copy %RECIPE_DIR%\cmake\FindZLIB_NG.cmake cmake\FindZLIB_NG.cmake
-if errorlevel 1 exit 1
 
 mkdir build
 if errorlevel 1 exit 1
