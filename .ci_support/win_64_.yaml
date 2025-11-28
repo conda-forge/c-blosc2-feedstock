@@ -13,6 +13,6 @@ lz4_c:
 target_platform:
 - win-64
 zlib_ng:
-- '2.2'
+- '2.3'
 zstd:
 - '1.5'
