@@ -1,5 +1,0 @@
-cmake_minimum_required(VERSION 3.15)
-project(blosc2_consumer LANGUAGES C)
-find_package(Blosc2 CONFIG REQUIRED)
-add_executable(blosc2_consumer consumer.c)
-target_link_libraries(blosc2_consumer PRIVATE Blosc2::blosc2_shared)
