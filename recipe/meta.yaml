@@ -10,7 +10,7 @@ source:
   sha256: db6ba3ee4f863a3c15794fbba99a4e5704d6a01017799628546152c8f4b06818
 
 build:
-  number: 0
+  number: 1
   run_exports:
     - {{ pin_subpackage('c-blosc2', max_pin='x.x') }}
 
@@ -27,6 +27,12 @@ requirements:
     - zlib-ng
 
 test:
+  requires:
+    - cmake  # [win and arm64]
+    - {{ compiler('c') }}  # [win and arm64]
+  files:
+    - CMakeLists.txt  # [win and arm64]
+    - consumer.c  # [win and arm64]
   commands:
     - test -e $PREFIX/include/blosc2.h                    # [unix]
     - test -e $PREFIX/include/blosc2/blosc2-export.h      # [unix]
@@ -37,6 +43,11 @@ test:
     - if not exist %LIBRARY_BIN%\libblosc2.dll exit 1           # [win]
     - if not exist %LIBRARY_LIB%\pkgconfig\blosc2.pc exit 1     # [win]
     - if not exist %LIBRARY_LIB%\blosc2.lib exit 1.             # [win]
+    - cmake -S . -B consumer-build -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="%LIBRARY_PREFIX%"  # [win and arm64]
+    - cmake --build consumer-build  # [win and arm64]
+    - consumer-build\blosc2_consumer.exe  # [win and arm64]
+    - dumpbin /headers "%LIBRARY_BIN%\libblosc2.dll" | findstr /I /C:"AA64 machine (ARM64)"  # [win and arm64]
+    - dumpbin /headers consumer-build\blosc2_consumer.exe | findstr /I /C:"AA64 machine (ARM64)"  # [win and arm64]
 
 about:
   home: https://github.com/Blosc/{{ name }}
